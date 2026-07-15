@@ -3,652 +3,657 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AInterface — 101 AI agents, one Chief</title>
-<meta name="description" content="AInterface is the command deck for a fleet of AI agents: 101 specialist agents across 14 domains, 23 signature workflows, human-in-the-loop by default, on a memory layer that compounds. A project of AI for Canadians.">
-<link rel="canonical" href="https://ainterface.org">
-<meta property="og:title" content="AInterface — 101 AI agents, one Chief">
-<meta property="og:description" content="One interface for a fleet of AI agents. 101 specialists across 14 domains, decision-first and human-in-the-loop. By AI for Canadians.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://ainterface.org">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="AInterface — 101 AI agents, one Chief">
-<meta name="twitter:description" content="One interface for a fleet of AI agents. Decision-first, human-in-the-loop. By AI for Canadians.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Spline+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<title>ainterface · build your own AI work console</title>
 <style>
+  :root{
+    --bg:#f7f6f1;
+    --panel:#ffffff;
+    --ink:#1a1a1a;
+    --ink-soft:#555;
+    --ink-faint:#8a8a82;
+    --line:#e6e5dc;
+    --line-strong:#cdccc2;
+    --accent:#4a5d3a;
+    --sales:#2f6690;
+    --delivery:#6a4c93;
+    --marketing:#c97b3a;
+    --build:#3d6b58;
+    --finops:#8b3a3a;
+    --warn:#c97b3a;
+    --good:#3d6b58;
+    --risk:#8b3a3a;
+    --info:#2f6690;
+    --mono:"SF Mono",Menlo,Consolas,monospace;
+    --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.5;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1240px;margin:0 auto;padding:0 28px}
+  a{color:inherit;text-decoration:none}
+  svg{display:block}
+
+  /* nav */
+  nav{display:flex;align-items:center;justify-content:space-between;padding:20px 0;border-bottom:1px solid var(--line)}
+  .brand{font-weight:600;font-size:18px;letter-spacing:-.01em;display:flex;align-items:center;gap:9px}
+  .brand .dot{width:11px;height:11px;border-radius:3px;background:var(--accent)}
+  .brand .tld{color:var(--ink-faint);font-weight:500}
+  .navlinks{display:flex;gap:24px;font-size:13.5px;color:var(--ink-soft)}
+  .navlinks a:hover{color:var(--ink)}
+  .nav-cta{background:var(--accent);color:#fff;padding:8px 15px;border-radius:8px;font-size:13.5px;font-weight:600}
+
+  /* hero */
+  header.hero{padding:58px 0 36px;border-bottom:1px dashed var(--line)}
+  .kicker{display:inline-block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--accent);background:#eef0e7;border:1px solid #dfe3d4;padding:5px 11px;border-radius:4px;margin-bottom:22px}
+  h1{font-size:clamp(34px,5.2vw,54px);line-height:1.05;letter-spacing:-.02em;font-weight:600;max-width:18ch;margin:0 0 20px}
+  .sub{font-size:clamp(16px,2.2vw,20px);color:var(--ink-soft);max-width:62ch;margin:0 0 30px}
+  .cta-row{display:flex;gap:12px;flex-wrap:wrap}
+  .btn-primary{background:var(--accent);color:#fff;font-weight:600;font-size:15px;padding:13px 24px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;transition:.12s}
+  .btn-primary:hover{background:#3e4f31}
+  .btn-ghost{background:var(--panel);color:var(--ink);font-weight:600;font-size:15px;padding:13px 22px;border:1px solid var(--line-strong);border-radius:8px;cursor:pointer;font-family:inherit}
+  .btn-ghost:hover{border-color:var(--accent);background:#f0eee5}
+
+  /* KPI strip */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:38px}
+  .kpi{background:var(--panel);border:1px solid var(--line);padding:15px 17px;border-radius:8px}
+  .kpi .label{font-size:11px;color:var(--ink-faint);text-transform:uppercase;letter-spacing:.04em}
+  .kpi .value{font-size:26px;font-weight:600;margin-top:4px;letter-spacing:-.01em}
+  .kpi .vsub{font-size:12px;color:var(--ink-soft);margin-top:2px}
+
+  /* section scaffolding */
+  section{padding:52px 0}
+  .section-bar{display:flex;align-items:baseline;justify-content:space-between;padding-bottom:9px;border-bottom:1px dashed var(--line);margin-bottom:24px}
+  .section-bar h2{margin:0;font-size:22px;font-weight:600;letter-spacing:-.01em}
+  .section-bar .sub{color:var(--ink-faint);font-size:13px}
+  .lead{color:var(--ink-soft);font-size:16px;max-width:74ch;margin:0 0 26px}
+
+  /* ===== MODULE EXPLORER ===== */
+  .explorer{display:grid;grid-template-columns:1fr 1.02fr;gap:22px;align-items:start}
+  .modgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .mod{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--mc,var(--accent));border-radius:8px;padding:13px 12px;cursor:pointer;transition:.12s;text-align:left;font-family:inherit}
+  .mod:hover{background:#fafaf3;border-color:var(--line-strong)}
+  .mod.active{box-shadow:0 0 0 1px var(--mc,var(--accent)),0 4px 10px rgba(26,26,26,.06);background:#fafaf3}
+  .mod .ic{width:26px;height:26px;border-radius:6px;background:var(--bg);display:flex;align-items:center;justify-content:center;margin-bottom:9px}
+  .mod .ic svg{width:15px;height:15px;stroke:var(--mc,var(--accent));stroke-width:1.7;fill:none}
+  .mod .mname{font-size:13.5px;font-weight:600;letter-spacing:-.01em}
+  .mod .mtag{font-size:11px;color:var(--ink-faint);margin-top:1px;line-height:1.3}
+
+  /* preview panel */
+  .preview{position:sticky;top:18px;background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--mc,var(--accent));border-radius:10px;overflow:hidden;min-height:440px;display:flex;flex-direction:column}
+  .pv-bar{display:flex;align-items:center;gap:10px;padding:15px 20px;border-bottom:1px solid var(--line)}
+  .pv-bar .ic{width:30px;height:30px;border-radius:7px;background:var(--bg);display:flex;align-items:center;justify-content:center}
+  .pv-bar .ic svg{width:17px;height:17px;stroke:var(--mc,var(--accent));stroke-width:1.7;fill:none}
+  .pv-bar .ptitle{font-weight:600;font-size:17px;letter-spacing:-.01em}
+  .pv-bar .ptag{color:var(--ink-faint);font-size:12px}
+  .pv-bar .spacer{flex:1}
+  .stage.live{background:linear-gradient(135deg,#3d6b3a,#5a8a4a);color:#fff;font-weight:600;letter-spacing:.05em;font-size:10px;padding:3px 9px;border-radius:3px;text-transform:uppercase;box-shadow:0 0 0 1px #3d6b3a,0 2px 4px rgba(61,107,58,.2)}
+  .stage.live::before{content:"● ";font-size:8px;vertical-align:middle}
+  .pv-body{padding:0;flex:1}
+  .prow{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;padding:11px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+  .prow:last-child{border:none}
+  .prow .l{color:var(--ink-soft)}
+  .prow .v{font-weight:600;text-align:right;max-width:62%}
+  .tag{flex-shrink:0;font-size:10.5px;font-weight:600;text-transform:uppercase;padding:3px 7px;border-radius:3px;letter-spacing:.04em}
+  .tag.move{background:#dde8d4;color:var(--good)}
+  .tag.info{background:#d8e3ed;color:var(--info)}
+  .tag.warn{background:#fde7d8;color:var(--warn)}
+  .tag.risk{background:#f5d6d6;color:var(--risk)}
+  .tag.decision{background:#e8e0ed;color:var(--delivery)}
+  .pv-foot{display:flex;align-items:center;gap:10px;padding:14px 20px;border-top:1px solid var(--line);background:var(--bg)}
+  .pv-foot .k{font-family:var(--mono);font-size:10.5px;color:var(--accent);border:1px solid var(--line-strong);background:#fff;border-radius:4px;padding:3px 7px}
+  .pv-foot .txt{font-size:12.5px;color:var(--ink-soft);font-family:var(--mono)}
+  /* panel detail sub-blocks (summary / actions / agent) */
+  .pv-sec{padding:15px 20px;border-bottom:1px solid var(--line)}
+  .pv-sec:last-of-type{border-bottom:none}
+  .pv-sec h5{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-faint);margin:0 0 11px;font-weight:600}
+  .exline{display:flex;gap:9px;padding:7px 0;font-size:13px;align-items:flex-start}
+  .exline:first-of-type{padding-top:0}
+  .exline:last-of-type{padding-bottom:0}
+  .exline .body{color:var(--ink-soft)}
+  .acts{display:grid;gap:8px}
+  .act{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;border-radius:7px;background:var(--bg);border:1px solid var(--line-strong);cursor:pointer;transition:.1s;text-align:left}
+  .act:hover{background:#f0eee5;border-color:var(--mc,var(--accent))}
+  .act .al{font-size:13px;font-weight:600}
+  .act .ap{font-family:var(--mono);font-size:10.5px;color:var(--ink-faint);white-space:nowrap}
+  .agentrow{display:flex;gap:10px;align-items:flex-start}
+  .agentrow .ava{width:24px;height:24px;border-radius:50%;flex-shrink:0;margin-top:1px;background:linear-gradient(135deg,var(--mc,var(--accent)),#5a8a4a)}
+  .agentrow .an{font-size:13px;font-weight:600}
+  .agentrow .at{font-size:12px;color:var(--ink-soft);margin-top:1px}
+  .run-state{display:inline-block;font-size:9px;padding:2px 6px;border-radius:3px;text-transform:uppercase;letter-spacing:.04em;font-weight:600;margin-left:7px;vertical-align:middle}
+  .run-state.on{background:#dde8d4;color:var(--good)}
+  .run-state.off{background:#f0f0eb;color:var(--ink-faint)}
+
+  /* ===== MEMORY LAYER ===== */
+  .memwrap{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:40px 36px;text-align:center}
+  .memflow{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;max-width:860px;margin:8px auto 0}
+  .memnode{background:var(--bg);border:1px solid var(--line-strong);border-radius:7px;padding:11px 15px;font-size:13px;font-weight:600;margin:5px}
+  .memcore{background:linear-gradient(135deg,#3d6b3a,#5a8a4a);color:#fff;border:none;padding:15px 24px;font-size:14px;letter-spacing:.03em;box-shadow:0 2px 6px rgba(61,107,58,.25)}
+  .memarrow{color:var(--line-strong);font-size:18px;margin:0 3px}
+  .memcaption{color:var(--ink-soft);font-size:14px;margin:24px auto 0;max-width:66ch}
+
+  /* ===== AGENT DEPLOY ===== */
+  .deploy{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center}
+  .deploy .copy ul{list-style:none;padding:0;margin:18px 0 0}
+  .deploy .copy li{padding:9px 0 9px 26px;position:relative;font-size:15px;color:var(--ink-soft)}
+  .deploy .copy li b{color:var(--ink);font-weight:600}
+  .deploy .copy li::before{content:"";position:absolute;left:0;top:15px;width:9px;height:9px;border-radius:2px;background:var(--accent)}
+  .agentcard{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--sales);border-radius:10px;overflow:hidden}
+  .ac-head{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:11px;font-size:14px;font-weight:600}
+  .ac-head .av{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--sales),var(--delivery))}
+  .ac-head .inv{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--ink-faint)}
+  .ac-step{padding:13px 20px;border-bottom:1px solid var(--line);font-size:13.5px;display:flex;gap:11px;align-items:flex-start}
+  .ac-step:last-child{border:none}
+  .ac-step .n{width:20px;height:20px;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;background:#dde8d4;color:var(--good)}
+  .ac-step .n.pending{background:#fde7d8;color:var(--warn)}
+
+  /* ===== TRUST ===== */
+  .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--delivery);border-radius:8px;padding:20px}
+  .card .ci{width:32px;height:32px;border-radius:7px;background:var(--bg);display:flex;align-items:center;justify-content:center;margin-bottom:13px}
+  .card .ci svg{width:17px;height:17px;stroke:var(--delivery);stroke-width:1.7;fill:none}
+  .card h3{font-size:15px;letter-spacing:-.01em;margin:0 0 7px;font-weight:600}
+  .card p{font-size:13px;color:var(--ink-soft);margin:0}
+  .northnote{color:var(--ink-faint);font-size:13px;margin-top:22px;font-style:italic}
+
+  /* ===== COMPARE ===== */
+  .crow{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .col{border:1px solid var(--line);border-radius:10px;padding:22px;background:var(--panel)}
+  .col.ours{border-top:4px solid var(--accent)}
+  .col h3{font-size:14px;margin:0 0 14px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-faint)}
+  .col.ours h3{color:var(--accent)}
+  .col ul{list-style:none;padding:0;margin:0}
+  .col li{font-size:14px;color:var(--ink-soft);padding:9px 0;padding-left:22px;position:relative;border-bottom:1px dotted var(--line)}
+  .col li:last-child{border-bottom:none}
+  .col.ours li{color:var(--ink)}
+  .col li::before{content:"";position:absolute;left:0;top:15px;width:11px;height:2px;background:var(--line-strong);border-radius:2px}
+  .col.ours li::before{background:var(--accent);width:8px;height:8px;border-radius:2px;top:12px}
+
+  /* ===== WAITLIST ===== */
+  .waitlist{background:var(--panel);border:1px solid var(--line);border-top:4px solid var(--accent);border-radius:10px;padding:46px 38px;text-align:center}
+  form{display:flex;gap:11px;justify-content:center;flex-wrap:wrap;max-width:520px;margin:24px auto 0}
+  input[type=email]{flex:1;min-width:240px;padding:13px 15px;border:1px solid var(--line-strong);border-radius:8px;font-size:15px;font-family:inherit;background:var(--bg)}
+  input[type=email]:focus{outline:none;border-color:var(--accent);background:#fff}
+  .note{font-size:12.5px;color:var(--ink-faint);margin-top:15px}
+  .thanks{display:none;color:var(--good);font-weight:600;font-size:16px;margin-top:20px}
+  .error{display:none;color:var(--risk);font-weight:500;font-size:14px;margin-top:16px}
+
+  footer{padding:38px 0;border-top:1px solid var(--line);color:var(--ink-faint);font-size:13px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+
+  @media(max-width:860px){
+    .navlinks{display:none}
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .explorer{grid-template-columns:1fr}
+    .preview{position:relative;top:0;order:-1}
+    .deploy{grid-template-columns:1fr}
+    .cards{grid-template-columns:1fr 1fr}
+    .crow{grid-template-columns:1fr}
+  }
+  @media(max-width:520px){
+    .modgrid{grid-template-columns:repeat(2,1fr)}
+    .cards{grid-template-columns:1fr}
+    .kpis{grid-template-columns:1fr 1fr}
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Spline+Sans:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style id="darkskin">
 :root{
-  --bg:#14171c;--bg-2:#191d24;--panel:#1e232b;--panel-2:#232932;
-  --line:#2c333d;--line-2:#3a424e;
-  --ink:#e9e6df;--ink-2:#a8b0bb;--ink-3:#6f7884;
-  --accent:#e0a042;--accent-dim:#7a5b26;
-  --green:#5fa888;--red:#cf6a5a;--blue:#6d92c4;
-  --radius:13px;
+  --bg:#14171c;--panel:#1e232b;--ink:#e9e6df;--ink-soft:#a8b0bb;--ink-faint:#6f7884;
+  --line:#2c333d;--line-strong:#3a424e;--accent:#e0a042;
+  --sales:#6d92c4;--delivery:#a487c9;--marketing:#e0a042;--build:#5fa888;--finops:#cf6a5a;
+  --warn:#e0a042;--good:#5fa888;--risk:#cf6a5a;--info:#6d92c4;
+  --sans:"Spline Sans",-apple-system,BlinkMacSystemFont,sans-serif;
+  --mono:"Spline Sans Mono",Menlo,Consolas,monospace;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--ink);font-family:"Spline Sans",-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-.wrap{max-width:1140px;margin:0 auto;padding:0 22px}
-/* nav */
-nav{position:sticky;top:0;z-index:50;background:rgba(20,23,28,.82);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
-nav .wrap{display:flex;align-items:center;justify-content:space-between;height:60px}
-.mark{font-family:"Spline Sans Mono",monospace;font-weight:600;letter-spacing:.02em;font-size:1.02rem}
-.mark b{color:var(--accent)}
-.nav-r{display:flex;align-items:center;gap:20px;font-size:.92rem}
-.nav-r a.plain{color:var(--ink-2)}
-.nav-r a.plain:hover{color:var(--ink)}
-.btn{display:inline-block;background:var(--accent);color:#1a1205;font-weight:600;padding:.5rem .95rem;border-radius:9px;font-size:.9rem;border:1px solid var(--accent)}
-.btn:hover{background:#eab259}
-.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line-2)}
-.btn.ghost:hover{border-color:var(--ink-3);background:var(--panel)}
-@media(max-width:640px){.nav-r a.plain{display:none}}
-/* hero */
-.hero{padding:76px 0 30px;border-bottom:1px solid var(--line);background:radial-gradient(1200px 400px at 50% -180px,rgba(224,160,66,.10),transparent)}
-.eyebrow{font-family:"Spline Sans Mono",monospace;font-size:.78rem;letter-spacing:.28em;text-transform:uppercase;color:var(--accent);margin-bottom:20px}
-.hero h1{font-family:"Fraunces",Georgia,serif;font-weight:500;font-size:clamp(2.3rem,5.6vw,4rem);line-height:1.04;letter-spacing:-.01em;max-width:16ch}
-.hero h1 em{font-style:italic;color:var(--accent)}
-.hero p.lede{color:var(--ink-2);font-size:clamp(1.05rem,2.1vw,1.28rem);max-width:60ch;margin:22px 0 30px}
-.cta-row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.stats{display:flex;gap:34px;flex-wrap:wrap;margin-top:44px;padding-top:26px;border-top:1px solid var(--line)}
-.stat b{font-family:"Fraunces",serif;font-weight:500;font-size:2rem;display:block;line-height:1}
-.stat span{color:var(--ink-3);font-size:.82rem;font-family:"Spline Sans Mono",monospace;letter-spacing:.03em}
-/* pillars */
-.pillars{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:44px 0}
-@media(max-width:820px){.pillars{grid-template-columns:1fr}}
-.pillar{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px}
-.pillar h4{font-family:"Fraunces",serif;font-weight:500;font-size:1.22rem;margin-bottom:8px}
-.pillar h4 span{color:var(--accent)}
-.pillar p{color:var(--ink-2);font-size:.95rem}
-/* catalog controls */
-.catalog-head{padding:16px 0 8px;border-top:1px solid var(--line)}
-.catalog-head h2.title{font-family:"Fraunces",serif;font-weight:500;font-size:1.9rem;margin-bottom:4px}
-.catalog-head p{color:var(--ink-2);font-size:.98rem}
-.controls{position:sticky;top:60px;z-index:40;background:var(--bg);padding:16px 0;display:flex;gap:12px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line)}
-.search{flex:1;min-width:220px;display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.55rem .8rem}
-.search input{background:transparent;border:0;outline:0;color:var(--ink);font-size:.95rem;width:100%;font-family:inherit}
-.search svg{flex:none;opacity:.5}
-.toggle{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:.55rem .8rem;cursor:pointer;font-size:.9rem;color:var(--ink-2);user-select:none}
-.toggle.on{border-color:var(--accent);color:var(--ink)}
-.toggle .sw{width:34px;height:19px;border-radius:20px;background:var(--line-2);position:relative;transition:.15s}
-.toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;background:var(--ink-3);transition:.15s}
-.toggle.on .sw{background:var(--accent-dim)}
-.toggle.on .sw::after{left:17px;background:var(--accent)}
-.count-live{color:var(--ink-3);font-family:"Spline Sans Mono",monospace;font-size:.82rem;margin-left:auto}
-.chips{display:flex;gap:8px;flex-wrap:wrap;padding:16px 0 4px}
-.chip{font-size:.82rem;color:var(--ink-2);background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:.32rem .7rem;white-space:nowrap}
-.chip:hover{border-color:var(--line-2);color:var(--ink)}
-.chip span{color:var(--ink-3);font-family:"Spline Sans Mono",monospace;font-size:.74rem}
-/* categories + cards */
-.cat{padding:40px 0 8px;scroll-margin-top:130px}
-.cat-head{display:flex;align-items:baseline;gap:12px}
-.cat-head h2{font-family:"Fraunces",serif;font-weight:500;font-size:1.6rem}
-.cat-count{font-family:"Spline Sans Mono",monospace;font-size:.78rem;color:var(--ink-3)}
-.cat-tag{color:var(--ink-2);font-size:.98rem;margin:4px 0 20px}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-@media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
-@media(max-width:600px){.grid{grid-template-columns:1fr}}
-.agent{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:17px 17px 14px;display:flex;flex-direction:column;transition:.13s}
-.agent:hover{border-color:var(--line-2);transform:translateY(-2px)}
-.agent[data-sig="1"]{background:linear-gradient(180deg,rgba(224,160,66,.06),var(--panel));border-color:var(--accent-dim)}
-.agent-top h3{font-size:1.02rem;font-weight:600;display:flex;align-items:center;gap:7px}
-.star{color:var(--accent);font-size:.9rem}
-.agent p{color:var(--ink-2);font-size:.9rem;margin:8px 0 14px;flex:1}
-.agent-foot{display:flex;align-items:center;gap:9px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:11px}
-.cad{font-family:"Spline Sans Mono",monospace;font-size:.7rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);background:var(--panel-2);border:1px solid var(--line-2);border-radius:6px;padding:.16rem .42rem}
-.cad-continuous{color:var(--green)}.cad-on-event{color:var(--blue)}.cad-daily{color:var(--accent)}
-.surf{color:var(--ink-3);font-size:.8rem}
-.noresult{display:none;text-align:center;color:var(--ink-3);padding:50px 0;font-size:1rem}
-/* footer */
-footer{border-top:1px solid var(--line);margin-top:50px;padding:44px 0;background:var(--bg-2)}
-footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
-footer .fnote{color:var(--ink-3);font-size:.9rem}
-footer a.flink{color:var(--accent)}
-.disc{color:var(--ink-3);font-size:.8rem;max-width:60ch;margin-top:10px}
+body{font-size:15px;background:radial-gradient(1100px 460px at 50% -220px,rgba(224,160,66,.06),transparent),var(--bg)}
+h1,h2,h3,.section-bar h2,.waitlist h2{font-family:"Fraunces",Georgia,serif!important;font-weight:500!important;letter-spacing:-.01em}
+.brand{font-family:"Spline Sans Mono",monospace}
+.brand .dot{background:var(--accent)}
+.kicker{background:rgba(224,160,66,.10);border:1px solid var(--accent-dim,#7a5b26);color:var(--accent)}
+.nav-cta{background:var(--accent);color:#1a1205}
+.nav-cta:hover{background:#eab259}
+.nav-ghost{border:1px solid var(--line-strong);color:var(--ink);padding:8px 15px;border-radius:8px;font-size:13.5px;font-weight:600}
+.nav-ghost:hover{border-color:var(--ink-faint);background:var(--panel)}
+.btn-primary{background:var(--accent);color:#1a1205}
+.btn-primary:hover{background:#eab259}
+.btn-ghost{background:transparent;color:var(--ink)}
+.btn-ghost:hover{border-color:var(--accent);background:var(--panel)}
+.mod:hover{background:#232932}
+.mod.active{background:#232932}
+.act{background:var(--bg)}
+.act:hover{background:#232932}
+.btn-ghost:hover,.col.ours{background:transparent}
+input[type=email]{background:var(--bg);color:var(--ink)}
+input[type=email]:focus{background:#232932}
+.tag.move,.tag.info,.tag.warn,.tag.risk,.tag.decision{background:rgba(255,255,255,.04)}
+.tag.move{color:var(--good)}.tag.info{color:var(--info)}.tag.warn{color:var(--warn)}.tag.risk{color:var(--risk)}.tag.decision{color:var(--delivery)}
+.stage.live{background:linear-gradient(135deg,#2e6b4a,#5fa888);color:#0d1510}
+.memcore{background:linear-gradient(135deg,#8a6320,#e0a042);color:#1a1205}
+/* ---- catalog section (dark, matches /app) ---- */
+#catalog .cat{padding:30px 0 6px;scroll-margin-top:20px}
+#catalog .cat-head{display:flex;align-items:baseline;gap:12px}
+#catalog .cat-head h3{font-family:"Fraunces",serif;font-weight:500;font-size:1.35rem;margin:0}
+#catalog .cat-count{font-family:var(--mono);font-size:.74rem;color:var(--ink-faint)}
+#catalog .cat-tag{color:var(--ink-soft);font-size:.95rem;margin:3px 0 16px}
+#catalog .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+@media(max-width:900px){#catalog .grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){#catalog .grid{grid-template-columns:1fr}}
+#catalog .agent{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:15px 15px 12px;display:flex;flex-direction:column;transition:.13s}
+#catalog .agent:hover{border-color:var(--line-strong);transform:translateY(-2px)}
+#catalog .agent[data-sig="1"]{background:linear-gradient(180deg,rgba(224,160,66,.06),var(--panel));border-color:#7a5b26}
+#catalog .agent h4{font-size:.98rem;font-weight:600;display:flex;align-items:center;gap:7px;margin:0;font-family:var(--sans)}
+#catalog .star{color:var(--accent)}
+#catalog .agent p{color:var(--ink-soft);font-size:.88rem;margin:7px 0 12px;flex:1}
+#catalog .agent-foot{display:flex;align-items:center;gap:9px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px}
+#catalog .cad{font-family:var(--mono);font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;color:var(--ink);background:#232932;border:1px solid var(--line-strong);border-radius:6px;padding:.15rem .4rem}
+#catalog .surf{color:var(--ink-faint);font-size:.78rem}
+#catalog .controls{position:sticky;top:0;z-index:30;background:var(--bg);padding:14px 0;display:flex;gap:10px;flex-wrap:wrap;align-items:center;border-bottom:1px solid var(--line);margin-bottom:8px}
+#catalog .search{flex:1;min-width:220px;display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:.5rem .75rem}
+#catalog .search input{background:transparent;border:0;outline:0;color:var(--ink);font-size:.92rem;width:100%;font-family:inherit}
+#catalog .search svg{flex:none;opacity:.5;stroke:var(--ink-soft)}
+#catalog .toggle{display:flex;align-items:center;gap:8px;background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:.5rem .75rem;cursor:pointer;font-size:.88rem;color:var(--ink-soft);user-select:none}
+#catalog .toggle.on{border-color:var(--accent);color:var(--ink)}
+#catalog .toggle .sw{width:32px;height:18px;border-radius:20px;background:var(--line-strong);position:relative;transition:.15s}
+#catalog .toggle .sw::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:var(--ink-faint);transition:.15s}
+#catalog .toggle.on .sw{background:#7a5b26}
+#catalog .toggle.on .sw::after{left:16px;background:var(--accent)}
+#catalog .count-live{color:var(--ink-faint);font-family:var(--mono);font-size:.8rem;margin-left:auto}
+#catalog .noresult{display:none;text-align:center;color:var(--ink-faint);padding:40px 0}
 </style>
 </head>
 <body>
-<nav><div class="wrap">
-  <a class="mark" href="/"><b>AI</b>nterface</a>
-  <div class="nav-r">
-    <a class="plain" href="#catalog">The 101</a>
-    <a class="plain" href="mailto:hello@aiforcanadians.org?subject=AInterface">Contact</a>
-    <a class="btn" href="/app">Open the interface →</a>
-  </div>
-</div></nav>
-
-<header class="hero"><div class="wrap">
-  <div class="eyebrow">Chief of Agents</div>
-  <h1>One interface for a <em>fleet</em> of AI agents.</h1>
-  <p class="lede">You run a large fleet of specialist agents. Instead of monitoring them, a <b>Chief of Agents</b> aggregates everything they do and surfaces only the digests — and the decisions that need a human. Decision-first, human-in-the-loop by default.</p>
-  <div class="cta-row">
-    <a class="btn" href="/app">Explore the interface →</a>
-    <a class="btn ghost" href="#catalog">See the 101 agents</a>
-  </div>
-  <div class="stats">
-    <div class="stat"><b>101</b><span>SPECIALIST AGENTS</span></div>
-    <div class="stat"><b>14</b><span>DOMAINS</span></div>
-    <div class="stat"><b>23</b><span>SIGNATURE WORKFLOWS ★</span></div>
-    <div class="stat"><b>&#8734;</b><span>COMPOUNDING MEMORY</span></div>
-  </div>
-</div></header>
 
 <div class="wrap">
-  <div class="pillars">
-    <div class="pillar"><h4><span>Breadth.</span> A catalog, not an app.</h4><p>101 agents across 14 domains — BD, delivery, research, content, finance, hiring, incubation, fund enablement, and the back office. Deploy one, or run the fleet.</p></div>
-    <div class="pillar"><h4><span>Depth.</span> Signature ★ agents.</h4><p>23 agents encode a specific method, not a generic task — the part a competitor can't lift by reading a screenshot. Everything drafts and waits for your approval.</p></div>
-    <div class="pillar"><h4><span>Memory.</span> A source of truth that compounds.</h4><p>A memory layer keeps every output sourced, fresh, and de-duplicated. The longer it runs, the sharper the fleet gets. That's the moat.</p></div>
-  </div>
+  <nav>
+    <div class="brand"><span class="dot"></span>ainterface<span class="tld">.org</span></div>
+    <div class="navlinks">
+      <a href="#panels">Panels</a>
+      <a href="#memory">Memory</a>
+      <a href="#deploy">Agents</a>
+      <a href="#catalog">Catalog</a>
+      <a href="#trust">Trust</a>
+      <a href="#waitlist">Waitlist</a>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <a class="nav-ghost" href="/app">Open the interface →</a>
+      <a class="nav-cta" href="#waitlist">Get early access</a>
+    </div>
+  </nav>
 </div>
 
-<div class="wrap" id="catalog">
-  <div class="catalog-head">
-    <h2 class="title">The catalog</h2>
-    <p>Every agent below is a real spec in the build. ★ marks a signature workflow. Cadence maps to how it deploys — Once, Daily, Weekly, Continuous, or On-event.</p>
+<div class="wrap">
+  <header class="hero">
+    <span class="kicker">Plug in your work · Plug in your model · Point an agent at it</span>
+    <h1>Your whole business, as panels you plug in and operate.</h1>
+    <p class="sub">Strategy, sales, research, competitors, operations, your CRM, all as live panels in one console. They share one memory. You point an agent at any of them and it goes to work. Build the interface to your work, then live in it.</p>
+    <div class="cta-row">
+      <button class="btn-primary" onclick="document.getElementById('email').focus()">Join the waitlist</button>
+      <a class="btn-ghost" href="/app">Open the live interface →</a>
+      <a class="btn-ghost" href="#panels">Explore the panels</a>
+    </div>
+
+    <div class="kpis">
+      <div class="kpi"><div class="label">Panels you plug in</div><div class="value">13+</div><div class="vsub">one for every part of the business</div></div>
+      <div class="kpi"><div class="label">Agents in the catalog</div><div class="value">101</div><div class="vsub">across 14 domains, deploy any</div></div>
+      <div class="kpi"><div class="label">Shared memory</div><div class="value">1</div><div class="vsub">every panel reads and writes it</div></div>
+      <div class="kpi"><div class="label">Your model</div><div class="value">BYOK</div><div class="vsub">your keys, zero markup</div></div>
+    </div>
+  </header>
+</div>
+
+<!-- ===== MODULE EXPLORER ===== -->
+<section id="panels"><div class="wrap">
+  <div class="section-bar">
+    <h2>Every part of your business is a panel</h2>
+    <span class="sub">click any panel to open it</span>
   </div>
+  <p class="lead">Add the panels you need. Each one is a living view of a part of your work, not a static report. Color-coded by function, the way a real operating dashboard reads at a glance.</p>
+
+  <div class="explorer">
+    <div class="modgrid" id="modgrid"></div>
+
+    <div class="preview" id="preview">
+      <div class="pv-bar">
+        <span class="ic" id="pvIc"></span>
+        <div>
+          <div class="ptitle" id="pvTitle">Strategy</div>
+          <div class="ptag" id="pvTag">Positioning &amp; bets</div>
+        </div>
+        <span class="spacer"></span>
+        <span class="stage live">live</span>
+      </div>
+      <div class="pv-body" id="pvBody"></div>
+      <div class="pv-foot">
+        <span class="k">⌘↵</span>
+        <span class="txt" id="pvFoot">point an agent at this panel</span>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ===== MEMORY LAYER ===== -->
+<section id="memory"><div class="wrap">
+  <div class="section-bar">
+    <h2>One shared memory</h2>
+    <span class="sub">nothing lives in a silo</span>
+  </div>
+  <div class="memwrap">
+    <p class="lead" style="text-align:center;margin:0 auto 8px;max-width:62ch">Your strategy knows what sales is seeing. Your competitor panel updates your roadmap. Every panel reads and writes one memory of your business.</p>
+    <div class="memflow">
+      <span class="memnode">Strategy</span>
+      <span class="memnode">Sales</span>
+      <span class="memnode">Competitors</span>
+      <span class="memarrow">&#8594;</span>
+      <span class="memnode memcore">MEMORY</span>
+      <span class="memarrow">&#8592;</span>
+      <span class="memnode">CRM</span>
+      <span class="memnode">Research</span>
+      <span class="memnode">Operations</span>
+    </div>
+    <p class="memcaption">Entities, decisions, relationships, and facts in one place. The memory dashboard shows what your console knows, what changed, and what is going stale, the way a knowledge graph keeps a whole operation coherent.</p>
+  </div>
+</div></section>
+
+<!-- ===== AGENT DEPLOY ===== -->
+<section id="deploy"><div class="wrap">
+  <div class="section-bar">
+    <h2>Then point an agent at any panel</h2>
+    <span class="sub">it does the work, then keeps going</span>
+  </div>
+  <div class="deploy">
+    <div class="copy">
+      <p class="lead" style="margin:0">A panel is not just something to look at. Drop an agent on it and it does the work the panel implies, then keeps going.</p>
+      <ul>
+        <li>Put an agent on <b>Sales</b> and it drafts the follow-ups and queues the outreach.</li>
+        <li>Put one on <b>Competitors</b> and it tracks moves and flags the whitespace.</li>
+        <li>Put one on <b>Operations</b> and it runs the workflow on schedule, in the cloud, without your laptop awake.</li>
+        <li>Bring your own model and keys. No markup. Providers bill you directly.</li>
+      </ul>
+    </div>
+    <div class="agentcard">
+      <div class="ac-head"><span class="av"></span> Agent on Sales panel <span class="inv">/deploy sales</span></div>
+      <div class="ac-step"><span class="n">&#10003;</span><div>Read the pipeline and last-touch dates from memory.</div></div>
+      <div class="ac-step"><span class="n">&#10003;</span><div>Drafted 4 follow-ups, queued in your inbox panel to edit in place.</div></div>
+      <div class="ac-step"><span class="n">&#10003;</span><div>Flagged the Lakeview proposal: 6 days quiet, nudge ready.</div></div>
+      <div class="ac-step"><span class="n pending">4</span><div>Watching for replies. Will draft the next move and log it to memory.</div></div>
+    </div>
+  </div>
+</div></section>
+
+
+<!-- ===== AGENT CATALOG ===== -->
+<section id="catalog"><div class="wrap">
+  <div class="section-bar">
+    <h2>The agent catalog</h2>
+    <span class="sub">101 specialists across 14 domains</span>
+  </div>
+  <p class="lead">Panels are where you work; agents are what you point at them. This is the full library you deploy from — 23 of them are signature ★ workflows that encode a specific method, not a generic task. Search it, or filter to the signature ones.</p>
   <div class="controls">
-    <label class="search">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input id="q" type="search" placeholder="Search 101 agents — e.g. proposal, RFP, onboarding, LinkedIn…" autocomplete="off">
-    </label>
+    <label class="search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg><input id="q" type="search" placeholder="Search 101 agents — proposal, RFP, onboarding, LinkedIn…" autocomplete="off"></label>
     <div class="toggle" id="sigToggle"><span class="sw"></span> Signature only ★</div>
     <span class="count-live" id="live">101 shown</span>
   </div>
-  <div class="chips"><a class="chip" href="#business-development---pipeline">Business Development &amp; Pipeline <span>11</span></a><a class="chip" href="#client-delivery---engagement">Client Delivery &amp; Engagement <span>8</span></a><a class="chip" href="#research---competitive-intelligence">Research &amp; Competitive Intelligence <span>8</span></a><a class="chip" href="#content--comms---thought-leadership">Content, Comms &amp; Thought Leadership <span>8</span></a><a class="chip" href="#training---learning-products">Training &amp; Learning Products <span>7</span></a><a class="chip" href="#incubation---accelerator-programs">Incubation &amp; Accelerator Programs <span>6</span></a><a class="chip" href="#vc---fund-portfolio-enablement">VC &amp; Fund Portfolio Enablement <span>5</span></a><a class="chip" href="#economic-development---public-programs">Economic Development &amp; Public Programs <span>6</span></a><a class="chip" href="#hr---people---l-d">HR / People / L&amp;D <span>5</span></a><a class="chip" href="#web--seo---funnel">Web, SEO &amp; Funnel <span>8</span></a><a class="chip" href="#finance--ops---admin">Finance, Ops &amp; Admin <span>10</span></a><a class="chip" href="#meetings--notes---knowledge">Meetings, Notes &amp; Knowledge <span>6</span></a><a class="chip" href="#local-smb-automation--runner">Local SMB Automation (Runner) <span>6</span></a><a class="chip" href="#source-of-truth-maintenance">Source-of-Truth Maintenance <span>7</span></a></div>
-  <section class="cat" id="business-development---pipeline">
-      <div class="cat-head"><h2>Business Development &amp; Pipeline</h2><span class="cat-count">11 agents</span></div>
-      <p class="cat-tag">Fill the pipe, never let a deal go cold.</p>
-      <div class="grid"><article class="agent" data-sig="1" data-text="diagnostic-first qualifier scores a new lead against the icp and recommends the fixed-fee diagnostic audit as the entry offer qualified lead + suggested entry offer">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Diagnostic-First Qualifier</h3></div>
-        <p>Scores a new lead against the ICP and recommends the fixed-fee diagnostic audit as the entry offer</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Qualified lead + suggested entry offer</span></div>
-      </article><article class="agent" data-sig="1" data-text="follow-up writer drafts follow-up emails for in-flight pipeline deals (0-20 day window). fixed cadence: day 5 check-in, day 10 add a relevant angle, day 14 hold. wedge chosen by trigger, not randomly. post-meeting variant assembled from commitments, never invented. hands off at 21 days to stalled-deal reviver. follow-up drafts + gap list">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Follow-up Writer</h3></div>
-        <p>Drafts follow-up emails for in-flight pipeline deals (0-20 day window). Fixed cadence: Day 5 check-in, Day 10 add a relevant angle, Day 14 hold. Wedge chosen by trigger, not randomly. Post-meeting variant assembled from commitments, never invented. Hands off at 21 days to Stalled-Deal Reviver.</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">Follow-up drafts + gap list</span></div>
-      </article><article class="agent" data-sig="1" data-text="referral-moment detector spots warm referral openings from wins and meetings, drafts the ask and a forwardable intro referral script + intro template">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Referral-Moment Detector</h3></div>
-        <p>Spots warm referral openings from wins and meetings, drafts the ask and a forwardable intro</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Referral script + intro template</span></div>
-      </article><article class="agent" data-sig="1" data-text="silver-platter outreach drafter builds a productized first move for a stalled prospect: wedge from the library, use case with proof point, single yes-ask, three response paths ready-to-send first move">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Silver-Platter Outreach Drafter</h3></div>
-        <p>Builds a productized first move for a stalled prospect: wedge from the library, use case with proof point, single yes-ask, three response paths</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Ready-to-send first move</span></div>
-      </article><article class="agent" data-sig="1" data-text="stalled-deal reviver detects deals gone cold and picks a re-open wedge with a fresh angle revive draft + flag">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Stalled-Deal Reviver</h3></div>
-        <p>Detects deals gone cold and picks a re-open wedge with a fresh angle</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">Revive draft + flag</span></div>
-      </article><article class="agent" data-sig="0" data-text="bd scout finds and enriches net-new leads matching the icp lead shortlist">
-        <div class="agent-top"><h3>BD Scout</h3></div>
-        <p>Finds and enriches net-new leads matching the ICP</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Lead shortlist</span></div>
-      </article><article class="agent" data-sig="0" data-text="meeting prep brief builds a discovery brief before each call using the validated sequence pre-call brief">
-        <div class="agent-top"><h3>Meeting Prep Brief</h3></div>
-        <p>Builds a discovery brief before each call using the validated sequence</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Pre-call brief</span></div>
-      </article><article class="agent" data-sig="0" data-text="pipeline health monitor flags at-risk deals, aging, and missing next steps at-risk list">
-        <div class="agent-top"><h3>Pipeline Health Monitor</h3></div>
-        <p>Flags at-risk deals, aging, and missing next steps</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">At-risk list</span></div>
-      </article><article class="agent" data-sig="0" data-text="proposal builder turns a discovery call into a scoped proposal draft proposal draft">
-        <div class="agent-top"><h3>Proposal Builder</h3></div>
-        <p>Turns a discovery call into a scoped proposal draft</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Proposal draft</span></div>
-      </article><article class="agent" data-sig="0" data-text="rfp scanner scans portals for relevant rfps and grants matched opportunities">
-        <div class="agent-top"><h3>RFP Scanner</h3></div>
-        <p>Scans portals for relevant RFPs and grants</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">Matched opportunities</span></div>
-      </article><article class="agent" data-sig="0" data-text="warm-intro miner mines 1st-degree connections for warm intro paths into pipeline targets and drafts the forwardable ask to the mutual connection ranked warm-intro paths + drafted ask">
-        <div class="agent-top"><h3>Warm-Intro Miner</h3></div>
-        <p>Mines 1st-degree connections for warm intro paths into pipeline targets and drafts the forwardable ask to the mutual connection</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Ranked warm-intro paths + drafted ask</span></div>
-      </article></div>
-    </section><section class="cat" id="client-delivery---engagement">
-      <div class="cat-head"><h2>Client Delivery &amp; Engagement</h2><span class="cat-count">8 agents</span></div>
-      <p class="cat-tag">Prove the value, month after month.</p>
-      <div class="grid"><article class="agent" data-sig="1" data-text="engagement setup spins up a new engagement workspace: context map, project instructions, run log, value-report template engagement scaffold">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Engagement Setup</h3></div>
-        <p>Spins up a new engagement workspace: context map, project instructions, run log, value-report template</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Engagement scaffold</span></div>
-      </article><article class="agent" data-sig="1" data-text="value-report generator builds the monthly client value report from real activity, the proof-of-roi artifact client value report">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Value-Report Generator</h3></div>
-        <p>Builds the monthly client value report from real activity, the proof-of-ROI artifact</p>
-        <div class="agent-foot"><span class="cad cad-monthly">Monthly</span><span class="surf">Client value report</span></div>
-      </article><article class="agent" data-sig="0" data-text="onboarding kit builder generates a tailored onboarding kit per new client onboarding kit">
-        <div class="agent-top"><h3>Onboarding Kit Builder</h3></div>
-        <p>Generates a tailored onboarding kit per new client</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Onboarding kit</span></div>
-      </article><article class="agent" data-sig="0" data-text="prompt-library curator maintains a living, engagement-specific prompt library updated library">
-        <div class="agent-top"><h3>Prompt-Library Curator</h3></div>
-        <p>Maintains a living, engagement-specific prompt library</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Updated library</span></div>
-      </article><article class="agent" data-sig="0" data-text="quarterly check-in watcher flags clients due for a check-in and drafts the outreach check-in list + draft">
-        <div class="agent-top"><h3>Quarterly Check-in Watcher</h3></div>
-        <p>Flags clients due for a check-in and drafts the outreach</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Check-in list + draft</span></div>
-      </article><article class="agent" data-sig="0" data-text="scorecard compiler compiles the monthly performance scorecard scorecard">
-        <div class="agent-top"><h3>Scorecard Compiler</h3></div>
-        <p>Compiles the monthly performance scorecard</p>
-        <div class="agent-foot"><span class="cad cad-monthly">Monthly</span><span class="surf">Scorecard</span></div>
-      </article><article class="agent" data-sig="0" data-text="session recap writer writes the recap and next steps after each client session recap">
-        <div class="agent-top"><h3>Session Recap Writer</h3></div>
-        <p>Writes the recap and next steps after each client session</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Recap</span></div>
-      </article><article class="agent" data-sig="0" data-text="skill packager packages a repeatable client workflow into a deployable skill skill file">
-        <div class="agent-top"><h3>Skill Packager</h3></div>
-        <p>Packages a repeatable client workflow into a deployable skill</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Skill file</span></div>
-      </article></div>
-    </section><section class="cat" id="research---competitive-intelligence">
-      <div class="cat-head"><h2>Research &amp; Competitive Intelligence</h2><span class="cat-count">8 agents</span></div>
-      <p class="cat-tag">Know the market before the room does.</p>
-      <div class="grid"><article class="agent" data-sig="0" data-text="competitor monitor watches named competitors for changes change alerts">
-        <div class="agent-top"><h3>Competitor Monitor</h3></div>
-        <p>Watches named competitors for changes</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Change alerts</span></div>
-      </article><article class="agent" data-sig="0" data-text="funding-round watcher alerts when target accounts raise capital funding alert">
-        <div class="agent-top"><h3>Funding-Round Watcher</h3></div>
-        <p>Alerts when target accounts raise capital</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Funding alert</span></div>
-      </article><article class="agent" data-sig="0" data-text="market scanner scans a defined segment for shifts market digest">
-        <div class="agent-top"><h3>Market Scanner</h3></div>
-        <p>Scans a defined segment for shifts</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Market digest</span></div>
-      </article><article class="agent" data-sig="0" data-text="news digest a daily brief on the user’s sectors and accounts news brief">
-        <div class="agent-top"><h3>News Digest</h3></div>
-        <p>A daily brief on the user’s sectors and accounts</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">News brief</span></div>
-      </article><article class="agent" data-sig="0" data-text="prospect enricher fills in contact, role, and context for new leads enriched record">
-        <div class="agent-top"><h3>Prospect Enricher</h3></div>
-        <p>Fills in contact, role, and context for new leads</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Enriched record</span></div>
-      </article><article class="agent" data-sig="0" data-text="regulatory watcher tracks policy and regulatory changes relevant to clients reg alert">
-        <div class="agent-top"><h3>Regulatory Watcher</h3></div>
-        <p>Tracks policy and regulatory changes relevant to clients</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">Reg alert</span></div>
-      </article><article class="agent" data-sig="0" data-text="research analyst deep-dives a company, market, or topic on demand research brief">
-        <div class="agent-top"><h3>Research Analyst</h3></div>
-        <p>Deep-dives a company, market, or topic on demand</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Research brief</span></div>
-      </article><article class="agent" data-sig="0" data-text="source-quality vetter vets and ranks sources before they enter a research task vetted source list">
-        <div class="agent-top"><h3>Source-Quality Vetter</h3></div>
-        <p>Vets and ranks sources before they enter a research task</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Vetted source list</span></div>
-      </article></div>
-    </section><section class="cat" id="content--comms---thought-leadership">
-      <div class="cat-head"><h2>Content, Comms &amp; Thought Leadership</h2><span class="cat-count">8 agents</span></div>
-      <p class="cat-tag">Turn the work into a voice.</p>
-      <div class="grid"><article class="agent" data-sig="0" data-text="blog drafter drafts a long-form post from an outline blog draft">
-        <div class="agent-top"><h3>Blog Drafter</h3></div>
-        <p>Drafts a long-form post from an outline</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Blog draft</span></div>
-      </article><article class="agent" data-sig="0" data-text="case-study builder builds a client case study from project notes case study">
-        <div class="agent-top"><h3>Case-Study Builder</h3></div>
-        <p>Builds a client case study from project notes</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Case study</span></div>
-      </article><article class="agent" data-sig="0" data-text="linkedin comment queue drafts thoughtful comments on target accounts’ posts comment queue">
-        <div class="agent-top"><h3>LinkedIn Comment Queue</h3></div>
-        <p>Drafts thoughtful comments on target accounts’ posts</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">Comment queue</span></div>
-      </article><article class="agent" data-sig="0" data-text="linkedin post writer turns an idea or a win into a post draft post draft">
-        <div class="agent-top"><h3>LinkedIn Post Writer</h3></div>
-        <p>Turns an idea or a win into a post draft</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Post draft</span></div>
-      </article><article class="agent" data-sig="0" data-text="newsletter drafter drafts the newsletter from the week’s activity newsletter draft">
-        <div class="agent-top"><h3>Newsletter Drafter</h3></div>
-        <p>Drafts the newsletter from the week’s activity</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Newsletter draft</span></div>
-      </article><article class="agent" data-sig="0" data-text="press-mention tracker tracks mentions of the user and clients mention alerts">
-        <div class="agent-top"><h3>Press-Mention Tracker</h3></div>
-        <p>Tracks mentions of the user and clients</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Mention alerts</span></div>
-      </article><article class="agent" data-sig="0" data-text="repurposer cuts long content into posts, clips, and snippets repurposed set">
-        <div class="agent-top"><h3>Repurposer</h3></div>
-        <p>Cuts long content into posts, clips, and snippets</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Repurposed set</span></div>
-      </article><article class="agent" data-sig="0" data-text="workshop builder assembles a workshop or talk deck from a topic deck">
-        <div class="agent-top"><h3>Workshop Builder</h3></div>
-        <p>Assembles a workshop or talk deck from a topic</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Deck</span></div>
-      </article></div>
-    </section><section class="cat" id="training---learning-products">
-      <div class="cat-head"><h2>Training &amp; Learning Products</h2><span class="cat-count">7 agents</span></div>
-      <p class="cat-tag">Package what you know into products.</p>
-      <div class="grid"><article class="agent" data-sig="1" data-text="graduation-to-coaching trigger flags learners ready to convert from the sprint into paid coaching conversion list">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Graduation-to-Coaching Trigger</h3></div>
-        <p>Flags learners ready to convert from the Sprint into paid coaching</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Conversion list</span></div>
-      </article><article class="agent" data-sig="1" data-text="sprint day-content generator generates or refreshes a 21-day sprint day: 10-15 minutes, one artifact, on-theme day content">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Sprint Day-Content Generator</h3></div>
-        <p>Generates or refreshes a 21-Day Sprint day: 10-15 minutes, one artifact, on-theme</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Day content</span></div>
-      </article><article class="agent" data-sig="0" data-text="assessment generator builds quizzes and assessments per module assessment">
-        <div class="agent-top"><h3>Assessment Generator</h3></div>
-        <p>Builds quizzes and assessments per module</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Assessment</span></div>
-      </article><article class="agent" data-sig="0" data-text="cohort progress tracker tracks completion and flags at-risk learners at-risk learners">
-        <div class="agent-top"><h3>Cohort Progress Tracker</h3></div>
-        <p>Tracks completion and flags at-risk learners</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">At-risk learners</span></div>
-      </article><article class="agent" data-sig="0" data-text="curriculum benchmarker benchmarks a curriculum against named peers benchmark">
-        <div class="agent-top"><h3>Curriculum Benchmarker</h3></div>
-        <p>Benchmarks a curriculum against named peers</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Benchmark</span></div>
-      </article><article class="agent" data-sig="0" data-text="learner-feedback synthesizer synthesizes feedback into specific curriculum edits edit recommendations">
-        <div class="agent-top"><h3>Learner-Feedback Synthesizer</h3></div>
-        <p>Synthesizes feedback into specific curriculum edits</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Edit recommendations</span></div>
-      </article><article class="agent" data-sig="0" data-text="sprint daily coach sends the daily learner nudge and check-in during a live cohort learner nudge">
-        <div class="agent-top"><h3>Sprint Daily Coach</h3></div>
-        <p>Sends the daily learner nudge and check-in during a live cohort</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">Learner nudge</span></div>
-      </article></div>
-    </section><section class="cat" id="incubation---accelerator-programs">
-      <div class="cat-head"><h2>Incubation &amp; Accelerator Programs</h2><span class="cat-count">6 agents</span></div>
-      <p class="cat-tag">Run a cohort like an operating system.</p>
-      <div class="grid"><article class="agent" data-sig="1" data-text="cohort office-hours synthesizer turns a group office-hours session into per-startup action items per-startup actions">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Cohort Office-Hours Synthesizer</h3></div>
-        <p>Turns a group office-hours session into per-startup action items</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Per-startup actions</span></div>
-      </article><article class="agent" data-sig="1" data-text="eir-in-a-box packager assembles a repeatable expert-in-residence program an accelerator buys for a whole cohort program package">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>EiR-in-a-Box Packager</h3></div>
-        <p>Assembles a repeatable expert-in-residence program an accelerator buys for a whole cohort</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Program package</span></div>
-      </article><article class="agent" data-sig="0" data-text="application reviewer screens accelerator applications against criteria ranked applicants">
-        <div class="agent-top"><h3>Application Reviewer</h3></div>
-        <p>Screens accelerator applications against criteria</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Ranked applicants</span></div>
-      </article><article class="agent" data-sig="0" data-text="demo-day prep coach preps cohort companies for demo day prep notes">
-        <div class="agent-top"><h3>Demo-Day Prep Coach</h3></div>
-        <p>Preps cohort companies for demo day</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Prep notes</span></div>
-      </article><article class="agent" data-sig="0" data-text="founder-match connector flags relevant intros within a cohort or network intro suggestions">
-        <div class="agent-top"><h3>Founder-Match Connector</h3></div>
-        <p>Flags relevant intros within a cohort or network</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Intro suggestions</span></div>
-      </article><article class="agent" data-sig="0" data-text="startup ai-readiness scorer scores a portfolio startup’s ai readiness and drafts a plan readiness score + plan">
-        <div class="agent-top"><h3>Startup AI-Readiness Scorer</h3></div>
-        <p>Scores a portfolio startup’s AI readiness and drafts a plan</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Readiness score + plan</span></div>
-      </article></div>
-    </section><section class="cat" id="vc---fund-portfolio-enablement">
-      <div class="cat-head"><h2>VC &amp; Fund Portfolio Enablement</h2><span class="cat-count">5 agents</span></div>
-      <p class="cat-tag">Give every portfolio company an AI edge.</p>
-      <div class="grid"><article class="agent" data-sig="1" data-text="portfolio ai-readiness scorer scores ai readiness across an entire fund portfolio portfolio heatmap">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Portfolio AI-Readiness Scorer</h3></div>
-        <p>Scores AI readiness across an entire fund portfolio</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Portfolio heatmap</span></div>
-      </article><article class="agent" data-sig="1" data-text="portfolio enablement planner builds a sprint-plus-audit rollout plan across portfolio companies rollout plan">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Portfolio Enablement Planner</h3></div>
-        <p>Builds a Sprint-plus-audit rollout plan across portfolio companies</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Rollout plan</span></div>
-      </article><article class="agent" data-sig="0" data-text="deal-flow triage triages inbound deal flow against a stated thesis ranked deals">
-        <div class="agent-top"><h3>Deal-Flow Triage</h3></div>
-        <p>Triages inbound deal flow against a stated thesis</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Ranked deals</span></div>
-      </article><article class="agent" data-sig="0" data-text="lp-update drafter drafts portfolio and lp update content update draft">
-        <div class="agent-top"><h3>LP-Update Drafter</h3></div>
-        <p>Drafts portfolio and LP update content</p>
-        <div class="agent-foot"><span class="cad cad-monthly">Monthly</span><span class="surf">Update draft</span></div>
-      </article><article class="agent" data-sig="0" data-text="portfolio-company pulse monitors portfolio companies for signals pulse digest">
-        <div class="agent-top"><h3>Portfolio-Company Pulse</h3></div>
-        <p>Monitors portfolio companies for signals</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Pulse digest</span></div>
-      </article></div>
-    </section><section class="cat" id="economic-development---public-programs">
-      <div class="cat-head"><h2>Economic Development &amp; Public Programs</h2><span class="cat-count">6 agents</span></div>
-      <p class="cat-tag">Scale a region&#x27;s capacity, not just a company&#x27;s.</p>
-      <div class="grid"><article class="agent" data-sig="1" data-text="funding-on-ramp matcher matches a client or program to government funding and checks eligibility funding matches + eligibility">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Funding-On-Ramp Matcher</h3></div>
-        <p>Matches a client or program to government funding and checks eligibility</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Funding matches + eligibility</span></div>
-      </article><article class="agent" data-sig="1" data-text="grant application drafter drafts canadian federal grant applications assembled from the sme&#x27;s intake profile. the gate beats the draft — only qualifying programs get a draft; every missing field is a named [[needs]] gap, never a fabricated value. nothing is submitted without human approval. application draft + gap list">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Grant Application Drafter</h3></div>
-        <p>Drafts Canadian federal grant applications assembled from the SME&#x27;s intake profile. The gate beats the draft — only qualifying programs get a draft; every missing field is a named [[NEEDS]] gap, never a fabricated value. Nothing is submitted without human approval.</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Application draft + gap list</span></div>
-      </article><article class="agent" data-sig="1" data-text="regional program builder designs a fundable regional ai-upskilling program with the funding on-ramp built in program design">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Regional Program Builder</h3></div>
-        <p>Designs a fundable regional AI-upskilling program with the funding on-ramp built in</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Program design</span></div>
-      </article><article class="agent" data-sig="0" data-text="impact-metrics reporter compiles program impact metrics for funders impact report">
-        <div class="agent-top"><h3>Impact-Metrics Reporter</h3></div>
-        <p>Compiles program impact metrics for funders</p>
-        <div class="agent-foot"><span class="cad cad-monthly">Monthly</span><span class="surf">Impact report</span></div>
-      </article><article class="agent" data-sig="0" data-text="public-data synthesizer synthesizes regional public and economic data regional brief">
-        <div class="agent-top"><h3>Public-Data Synthesizer</h3></div>
-        <p>Synthesizes regional public and economic data</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Regional brief</span></div>
-      </article><article class="agent" data-sig="0" data-text="stakeholder map builder maps regional stakeholders and partners stakeholder map">
-        <div class="agent-top"><h3>Stakeholder Map Builder</h3></div>
-        <p>Maps regional stakeholders and partners</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Stakeholder map</span></div>
-      </article></div>
-    </section><section class="cat" id="hr---people---l-d">
-      <div class="cat-head"><h2>HR / People / L&amp;D</h2><span class="cat-count">5 agents</span></div>
-      <p class="cat-tag">Hire, onboard, and grow the team.</p>
-      <div class="grid"><article class="agent" data-sig="0" data-text="ai-fluency program builder builds an l&amp;d ai-fluency program for a team program">
-        <div class="agent-top"><h3>AI-Fluency Program Builder</h3></div>
-        <p>Builds an L&amp;D AI-fluency program for a team</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Program</span></div>
-      </article><article class="agent" data-sig="0" data-text="onboarding-content generator generates employee onboarding content onboarding content">
-        <div class="agent-top"><h3>Onboarding-Content Generator</h3></div>
-        <p>Generates employee onboarding content</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Onboarding content</span></div>
-      </article><article class="agent" data-sig="0" data-text="seat-expansion watcher flags accounts ready to expand seats expansion list">
-        <div class="agent-top"><h3>Seat-Expansion Watcher</h3></div>
-        <p>Flags accounts ready to expand seats</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Expansion list</span></div>
-      </article><article class="agent" data-sig="0" data-text="skills-gap mapper maps a team’s ai skills gaps gap map">
-        <div class="agent-top"><h3>Skills-Gap Mapper</h3></div>
-        <p>Maps a team’s AI skills gaps</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Gap map</span></div>
-      </article><article class="agent" data-sig="0" data-text="use-guideline drafter drafts responsible-ai use guidelines guideline draft">
-        <div class="agent-top"><h3>Use-Guideline Drafter</h3></div>
-        <p>Drafts responsible-AI use guidelines</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Guideline draft</span></div>
-      </article></div>
-    </section><section class="cat" id="web--seo---funnel">
-      <div class="cat-head"><h2>Web, SEO &amp; Funnel</h2><span class="cat-count">8 agents</span></div>
-      <p class="cat-tag">Get found, then convert.</p>
-      <div class="grid"><article class="agent" data-sig="0" data-text="backlink watcher reports new and lost backlinks backlink changes">
-        <div class="agent-top"><h3>Backlink Watcher</h3></div>
-        <p>Reports new and lost backlinks</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">Backlink changes</span></div>
-      </article><article class="agent" data-sig="0" data-text="broken-link crawler crawls the site for broken links broken-link list">
-        <div class="agent-top"><h3>Broken-Link Crawler</h3></div>
-        <p>Crawls the site for broken links</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Broken-link list</span></div>
-      </article><article class="agent" data-sig="0" data-text="cta optimizer suggests stronger calls-to-action page by page cta recommendations">
-        <div class="agent-top"><h3>CTA Optimizer</h3></div>
-        <p>Suggests stronger calls-to-action page by page</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">CTA recommendations</span></div>
-      </article><article class="agent" data-sig="0" data-text="funnel drop-off analyzer flags where the conversion funnel leaks drop-off points">
-        <div class="agent-top"><h3>Funnel Drop-off Analyzer</h3></div>
-        <p>Flags where the conversion funnel leaks</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Drop-off points</span></div>
-      </article><article class="agent" data-sig="0" data-text="keyword tracker tracks target-keyword rankings ranking changes">
-        <div class="agent-top"><h3>Keyword Tracker</h3></div>
-        <p>Tracks target-keyword rankings</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Ranking changes</span></div>
-      </article><article class="agent" data-sig="0" data-text="seo audit one-pass technical and content audit audit report">
-        <div class="agent-top"><h3>SEO Audit</h3></div>
-        <p>One-pass technical and content audit</p>
-        <div class="agent-foot"><span class="cad cad-monthly">Monthly</span><span class="surf">Audit report</span></div>
-      </article><article class="agent" data-sig="0" data-text="schema &amp; meta checker checks structured data and meta tags issues">
-        <div class="agent-top"><h3>Schema &amp; Meta Checker</h3></div>
-        <p>Checks structured data and meta tags</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Issues</span></div>
-      </article><article class="agent" data-sig="0" data-text="site-speed monitor watches page speed for regressions regression alerts">
-        <div class="agent-top"><h3>Site-Speed Monitor</h3></div>
-        <p>Watches page speed for regressions</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Regression alerts</span></div>
-      </article></div>
-    </section><section class="cat" id="finance--ops---admin">
-      <div class="cat-head"><h2>Finance, Ops &amp; Admin</h2><span class="cat-count">10 agents</span></div>
-      <p class="cat-tag">The back office that runs itself.</p>
-      <div class="grid"><article class="agent" data-sig="1" data-text="commission calculator computes contractor commissions on collected fees, the engine behind the hire-to-deliver model commission statement">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Commission Calculator</h3></div>
-        <p>Computes contractor commissions on collected fees, the engine behind the hire-to-deliver model</p>
-        <div class="agent-foot"><span class="cad cad-monthly">Monthly</span><span class="surf">Commission statement</span></div>
-      </article><article class="agent" data-sig="0" data-text="calendar concierge schedules, reschedules, and preps meetings calendar actions">
-        <div class="agent-top"><h3>Calendar Concierge</h3></div>
-        <p>Schedules, reschedules, and preps meetings</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Calendar actions</span></div>
-      </article><article class="agent" data-sig="0" data-text="cash-flow snapshot a rolling view of money in and out cash-flow snapshot">
-        <div class="agent-top"><h3>Cash-Flow Snapshot</h3></div>
-        <p>A rolling view of money in and out</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Cash-flow snapshot</span></div>
-      </article><article class="agent" data-sig="0" data-text="doc organizer files and tags new documents automatically filed docs">
-        <div class="agent-top"><h3>Doc Organizer</h3></div>
-        <p>Files and tags new documents automatically</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Filed docs</span></div>
-      </article><article class="agent" data-sig="0" data-text="expense categorizer categorizes expenses as they land categorized expenses">
-        <div class="agent-top"><h3>Expense Categorizer</h3></div>
-        <p>Categorizes expenses as they land</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">Categorized expenses</span></div>
-      </article><article class="agent" data-sig="0" data-text="inbox triage sorts and flags the inbox, surfaces what matters prioritized inbox">
-        <div class="agent-top"><h3>Inbox Triage</h3></div>
-        <p>Sorts and flags the inbox, surfaces what matters</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Prioritized inbox</span></div>
-      </article><article class="agent" data-sig="0" data-text="invoice chaser tracks unpaid invoices and drafts reminders chase drafts">
-        <div class="agent-top"><h3>Invoice Chaser</h3></div>
-        <p>Tracks unpaid invoices and drafts reminders</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Chase drafts</span></div>
-      </article><article class="agent" data-sig="0" data-text="renewal reminder flags upcoming renewals in good time renewal list">
-        <div class="agent-top"><h3>Renewal Reminder</h3></div>
-        <p>Flags upcoming renewals in good time</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Renewal list</span></div>
-      </article><article class="agent" data-sig="0" data-text="task router routes incoming asks to the right agent routed tasks">
-        <div class="agent-top"><h3>Task Router</h3></div>
-        <p>Routes incoming asks to the right agent</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Routed tasks</span></div>
-      </article><article class="agent" data-sig="0" data-text="weekly review compiler assembles the friday review weekly review">
-        <div class="agent-top"><h3>Weekly Review Compiler</h3></div>
-        <p>Assembles the Friday review</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Weekly review</span></div>
-      </article></div>
-    </section><section class="cat" id="meetings--notes---knowledge">
-      <div class="cat-head"><h2>Meetings, Notes &amp; Knowledge</h2><span class="cat-count">6 agents</span></div>
-      <p class="cat-tag">Nothing said in a meeting gets lost.</p>
-      <div class="grid"><article class="agent" data-sig="0" data-text="action-item extractor extracts commitments from every meeting action items">
-        <div class="agent-top"><h3>Action-Item Extractor</h3></div>
-        <p>Extracts commitments from every meeting</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Action items</span></div>
-      </article><article class="agent" data-sig="0" data-text="commitment tracker tracks whether commitments were actually kept open commitments">
-        <div class="agent-top"><h3>Commitment Tracker</h3></div>
-        <p>Tracks whether commitments were actually kept</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Open commitments</span></div>
-      </article><article class="agent" data-sig="0" data-text="debrief writer turns a call into a debrief and next steps debrief">
-        <div class="agent-top"><h3>Debrief Writer</h3></div>
-        <p>Turns a call into a debrief and next steps</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Debrief</span></div>
-      </article><article class="agent" data-sig="0" data-text="decision logger logs key decisions with their context decision log">
-        <div class="agent-top"><h3>Decision Logger</h3></div>
-        <p>Logs key decisions with their context</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Decision log</span></div>
-      </article><article class="agent" data-sig="0" data-text="granola ingestor pulls and structures meeting transcripts structured notes">
-        <div class="agent-top"><h3>Granola Ingestor</h3></div>
-        <p>Pulls and structures meeting transcripts</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Structured notes</span></div>
-      </article><article class="agent" data-sig="0" data-text="transcript summarizer summarizes long transcripts on demand summary">
-        <div class="agent-top"><h3>Transcript Summarizer</h3></div>
-        <p>Summarizes long transcripts on demand</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Summary</span></div>
-      </article></div>
-    </section><section class="cat" id="local-smb-automation--runner">
-      <div class="cat-head"><h2>Local SMB Automation (Runner)</h2><span class="cat-count">6 agents</span></div>
-      <p class="cat-tag">Main-street businesses, automated.</p>
-      <div class="grid"><article class="agent" data-sig="1" data-text="contractor-handoff packager packages a scoped job so a hired contractor can execute it without you, the core of the do-then-hire model handoff pack">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Contractor-Handoff Packager</h3></div>
-        <p>Packages a scoped job so a hired contractor can execute it without you, the core of the do-then-hire model</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Handoff pack</span></div>
-      </article><article class="agent" data-sig="1" data-text="smb process scoper scopes a local business’s repetitive process into a runner automation automation scope">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>SMB Process Scoper</h3></div>
-        <p>Scopes a local business’s repetitive process into a Runner automation</p>
-        <div class="agent-foot"><span class="cad cad-on-demand">On-demand</span><span class="surf">Automation scope</span></div>
-      </article><article class="agent" data-sig="0" data-text="listing &amp; bid builder builds listings and bids, the used-car template generalized ready listings">
-        <div class="agent-top"><h3>Listing &amp; Bid Builder</h3></div>
-        <p>Builds listings and bids, the used-car template generalized</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Ready listings</span></div>
-      </article><article class="agent" data-sig="0" data-text="local-lead capturer captures and qualifies local inbound qualified local leads">
-        <div class="agent-top"><h3>Local-Lead Capturer</h3></div>
-        <p>Captures and qualifies local inbound</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Qualified local leads</span></div>
-      </article><article class="agent" data-sig="0" data-text="quote generator generates quotes from an inbound request quote">
-        <div class="agent-top"><h3>Quote Generator</h3></div>
-        <p>Generates quotes from an inbound request</p>
-        <div class="agent-foot"><span class="cad cad-on-event">On-event</span><span class="surf">Quote</span></div>
-      </article><article class="agent" data-sig="0" data-text="recurring-service scheduler schedules recurring local-service runs run schedule">
-        <div class="agent-top"><h3>Recurring-Service Scheduler</h3></div>
-        <p>Schedules recurring local-service runs</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Run schedule</span></div>
-      </article></div>
-    </section><section class="cat" id="source-of-truth-maintenance">
-      <div class="cat-head"><h2>Source-of-Truth Maintenance</h2><span class="cat-count">7 agents</span></div>
-      <p class="cat-tag">The memory layer that compounds — the real moat.</p>
-      <div class="grid"><article class="agent" data-sig="1" data-text="conflict detector flags when two sources disagree on a fact or figure conflicts">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Conflict Detector</h3></div>
-        <p>Flags when two sources disagree on a fact or figure</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Conflicts</span></div>
-      </article><article class="agent" data-sig="1" data-text="freshness auditor flags stale records for re-verification before agents trust them stale list">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Freshness Auditor</h3></div>
-        <p>Flags stale records for re-verification before agents trust them</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">Stale list</span></div>
-      </article><article class="agent" data-sig="1" data-text="pattern miner surfaces inferred patterns from history into the derived-memory layer inferred patterns">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Pattern Miner</h3></div>
-        <p>Surfaces inferred patterns from history into the derived-memory layer</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Inferred patterns</span></div>
-      </article><article class="agent" data-sig="1" data-text="provenance tagger tags every new memory item with its source and timestamp tagged items">
-        <div class="agent-top"><h3><span class="star" title="Signature agent — encodes a specific method">★</span>Provenance Tagger</h3></div>
-        <p>Tags every new memory item with its source and timestamp</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Tagged items</span></div>
-      </article><article class="agent" data-sig="0" data-text="dedup &amp; merge finds and merges duplicate records merge suggestions">
-        <div class="agent-top"><h3>Dedup &amp; Merge</h3></div>
-        <p>Finds and merges duplicate records</p>
-        <div class="agent-foot"><span class="cad cad-daily">Daily</span><span class="surf">Merge suggestions</span></div>
-      </article><article class="agent" data-sig="0" data-text="knowledge-gap finder flags missing context the agents need but do not have gap list">
-        <div class="agent-top"><h3>Knowledge-Gap Finder</h3></div>
-        <p>Flags missing context the agents need but do not have</p>
-        <div class="agent-foot"><span class="cad cad-weekly">Weekly</span><span class="surf">Gap list</span></div>
-      </article><article class="agent" data-sig="0" data-text="memory scoper enforces which agents and projects may see which memory scope audits">
-        <div class="agent-top"><h3>Memory Scoper</h3></div>
-        <p>Enforces which agents and projects may see which memory</p>
-        <div class="agent-foot"><span class="cad cad-continuous">Continuous</span><span class="surf">Scope audits</span></div>
-      </article></div>
-    </section>
+  <div class="cat"><div class="cat-head"><h3>Business Development &amp; Pipeline</h3><span class="cat-count">11</span></div><p class="cat-tag">Fill the pipe, never let a deal go cold.</p><div class="grid"><article class="agent" data-sig="1" data-text="diagnostic-first qualifier scores a new lead against the icp and recommends the fixed-fee diagnostic audit as the entry offer qualified lead + suggested entry offer"><h4><span class="star" title="Signature agent">★</span>Diagnostic-First Qualifier</h4><p>Scores a new lead against the ICP and recommends the fixed-fee diagnostic audit as the entry offer</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Qualified lead + suggested entry offer</span></div></article><article class="agent" data-sig="1" data-text="follow-up writer drafts follow-up emails for in-flight pipeline deals (0-20 day window). fixed cadence: day 5 check-in, day 10 add a relevant angle, day 14 hold. wedge chosen by trigger, not randomly. post-meeting variant assembled from commitments, never invented. hands off at 21 days to stalled-deal reviver. follow-up drafts + gap list"><h4><span class="star" title="Signature agent">★</span>Follow-up Writer</h4><p>Drafts follow-up emails for in-flight pipeline deals (0-20 day window). Fixed cadence: Day 5 check-in, Day 10 add a relevant angle, Day 14 hold. Wedge chosen by trigger, not randomly. Post-meeting variant assembled from commitments, never invented. Hands off at 21 days to Stalled-Deal Reviver.</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">Follow-up drafts + gap list</span></div></article><article class="agent" data-sig="1" data-text="referral-moment detector spots warm referral openings from wins and meetings, drafts the ask and a forwardable intro referral script + intro template"><h4><span class="star" title="Signature agent">★</span>Referral-Moment Detector</h4><p>Spots warm referral openings from wins and meetings, drafts the ask and a forwardable intro</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Referral script + intro template</span></div></article><article class="agent" data-sig="1" data-text="silver-platter outreach drafter builds a productized first move for a stalled prospect: wedge from the library, use case with proof point, single yes-ask, three response paths ready-to-send first move"><h4><span class="star" title="Signature agent">★</span>Silver-Platter Outreach Drafter</h4><p>Builds a productized first move for a stalled prospect: wedge from the library, use case with proof point, single yes-ask, three response paths</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Ready-to-send first move</span></div></article><article class="agent" data-sig="1" data-text="stalled-deal reviver detects deals gone cold and picks a re-open wedge with a fresh angle revive draft + flag"><h4><span class="star" title="Signature agent">★</span>Stalled-Deal Reviver</h4><p>Detects deals gone cold and picks a re-open wedge with a fresh angle</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">Revive draft + flag</span></div></article><article class="agent" data-sig="0" data-text="bd scout finds and enriches net-new leads matching the icp lead shortlist"><h4>BD Scout</h4><p>Finds and enriches net-new leads matching the ICP</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Lead shortlist</span></div></article><article class="agent" data-sig="0" data-text="meeting prep brief builds a discovery brief before each call using the validated sequence pre-call brief"><h4>Meeting Prep Brief</h4><p>Builds a discovery brief before each call using the validated sequence</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Pre-call brief</span></div></article><article class="agent" data-sig="0" data-text="pipeline health monitor flags at-risk deals, aging, and missing next steps at-risk list"><h4>Pipeline Health Monitor</h4><p>Flags at-risk deals, aging, and missing next steps</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">At-risk list</span></div></article><article class="agent" data-sig="0" data-text="proposal builder turns a discovery call into a scoped proposal draft proposal draft"><h4>Proposal Builder</h4><p>Turns a discovery call into a scoped proposal draft</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Proposal draft</span></div></article><article class="agent" data-sig="0" data-text="rfp scanner scans portals for relevant rfps and grants matched opportunities"><h4>RFP Scanner</h4><p>Scans portals for relevant RFPs and grants</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">Matched opportunities</span></div></article><article class="agent" data-sig="0" data-text="warm-intro miner mines 1st-degree connections for warm intro paths into pipeline targets and drafts the forwardable ask to the mutual connection ranked warm-intro paths + drafted ask"><h4>Warm-Intro Miner</h4><p>Mines 1st-degree connections for warm intro paths into pipeline targets and drafts the forwardable ask to the mutual connection</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Ranked warm-intro paths + drafted ask</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>Client Delivery &amp; Engagement</h3><span class="cat-count">8</span></div><p class="cat-tag">Prove the value, month after month.</p><div class="grid"><article class="agent" data-sig="1" data-text="engagement setup spins up a new engagement workspace: context map, project instructions, run log, value-report template engagement scaffold"><h4><span class="star" title="Signature agent">★</span>Engagement Setup</h4><p>Spins up a new engagement workspace: context map, project instructions, run log, value-report template</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Engagement scaffold</span></div></article><article class="agent" data-sig="1" data-text="value-report generator builds the monthly client value report from real activity, the proof-of-roi artifact client value report"><h4><span class="star" title="Signature agent">★</span>Value-Report Generator</h4><p>Builds the monthly client value report from real activity, the proof-of-ROI artifact</p><div class="agent-foot"><span class="cad">Monthly</span><span class="surf">Client value report</span></div></article><article class="agent" data-sig="0" data-text="onboarding kit builder generates a tailored onboarding kit per new client onboarding kit"><h4>Onboarding Kit Builder</h4><p>Generates a tailored onboarding kit per new client</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Onboarding kit</span></div></article><article class="agent" data-sig="0" data-text="prompt-library curator maintains a living, engagement-specific prompt library updated library"><h4>Prompt-Library Curator</h4><p>Maintains a living, engagement-specific prompt library</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Updated library</span></div></article><article class="agent" data-sig="0" data-text="quarterly check-in watcher flags clients due for a check-in and drafts the outreach check-in list + draft"><h4>Quarterly Check-in Watcher</h4><p>Flags clients due for a check-in and drafts the outreach</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Check-in list + draft</span></div></article><article class="agent" data-sig="0" data-text="scorecard compiler compiles the monthly performance scorecard scorecard"><h4>Scorecard Compiler</h4><p>Compiles the monthly performance scorecard</p><div class="agent-foot"><span class="cad">Monthly</span><span class="surf">Scorecard</span></div></article><article class="agent" data-sig="0" data-text="session recap writer writes the recap and next steps after each client session recap"><h4>Session Recap Writer</h4><p>Writes the recap and next steps after each client session</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Recap</span></div></article><article class="agent" data-sig="0" data-text="skill packager packages a repeatable client workflow into a deployable skill skill file"><h4>Skill Packager</h4><p>Packages a repeatable client workflow into a deployable skill</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Skill file</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>Research &amp; Competitive Intelligence</h3><span class="cat-count">8</span></div><p class="cat-tag">Know the market before the room does.</p><div class="grid"><article class="agent" data-sig="0" data-text="competitor monitor watches named competitors for changes change alerts"><h4>Competitor Monitor</h4><p>Watches named competitors for changes</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Change alerts</span></div></article><article class="agent" data-sig="0" data-text="funding-round watcher alerts when target accounts raise capital funding alert"><h4>Funding-Round Watcher</h4><p>Alerts when target accounts raise capital</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Funding alert</span></div></article><article class="agent" data-sig="0" data-text="market scanner scans a defined segment for shifts market digest"><h4>Market Scanner</h4><p>Scans a defined segment for shifts</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Market digest</span></div></article><article class="agent" data-sig="0" data-text="news digest a daily brief on the user’s sectors and accounts news brief"><h4>News Digest</h4><p>A daily brief on the user’s sectors and accounts</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">News brief</span></div></article><article class="agent" data-sig="0" data-text="prospect enricher fills in contact, role, and context for new leads enriched record"><h4>Prospect Enricher</h4><p>Fills in contact, role, and context for new leads</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Enriched record</span></div></article><article class="agent" data-sig="0" data-text="regulatory watcher tracks policy and regulatory changes relevant to clients reg alert"><h4>Regulatory Watcher</h4><p>Tracks policy and regulatory changes relevant to clients</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">Reg alert</span></div></article><article class="agent" data-sig="0" data-text="research analyst deep-dives a company, market, or topic on demand research brief"><h4>Research Analyst</h4><p>Deep-dives a company, market, or topic on demand</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Research brief</span></div></article><article class="agent" data-sig="0" data-text="source-quality vetter vets and ranks sources before they enter a research task vetted source list"><h4>Source-Quality Vetter</h4><p>Vets and ranks sources before they enter a research task</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Vetted source list</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>Content, Comms &amp; Thought Leadership</h3><span class="cat-count">8</span></div><p class="cat-tag">Turn the work into a voice.</p><div class="grid"><article class="agent" data-sig="0" data-text="blog drafter drafts a long-form post from an outline blog draft"><h4>Blog Drafter</h4><p>Drafts a long-form post from an outline</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Blog draft</span></div></article><article class="agent" data-sig="0" data-text="case-study builder builds a client case study from project notes case study"><h4>Case-Study Builder</h4><p>Builds a client case study from project notes</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Case study</span></div></article><article class="agent" data-sig="0" data-text="linkedin comment queue drafts thoughtful comments on target accounts’ posts comment queue"><h4>LinkedIn Comment Queue</h4><p>Drafts thoughtful comments on target accounts’ posts</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">Comment queue</span></div></article><article class="agent" data-sig="0" data-text="linkedin post writer turns an idea or a win into a post draft post draft"><h4>LinkedIn Post Writer</h4><p>Turns an idea or a win into a post draft</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Post draft</span></div></article><article class="agent" data-sig="0" data-text="newsletter drafter drafts the newsletter from the week’s activity newsletter draft"><h4>Newsletter Drafter</h4><p>Drafts the newsletter from the week’s activity</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Newsletter draft</span></div></article><article class="agent" data-sig="0" data-text="press-mention tracker tracks mentions of the user and clients mention alerts"><h4>Press-Mention Tracker</h4><p>Tracks mentions of the user and clients</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Mention alerts</span></div></article><article class="agent" data-sig="0" data-text="repurposer cuts long content into posts, clips, and snippets repurposed set"><h4>Repurposer</h4><p>Cuts long content into posts, clips, and snippets</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Repurposed set</span></div></article><article class="agent" data-sig="0" data-text="workshop builder assembles a workshop or talk deck from a topic deck"><h4>Workshop Builder</h4><p>Assembles a workshop or talk deck from a topic</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Deck</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>Training &amp; Learning Products</h3><span class="cat-count">7</span></div><p class="cat-tag">Package what you know into products.</p><div class="grid"><article class="agent" data-sig="1" data-text="graduation-to-coaching trigger flags learners ready to convert from the sprint into paid coaching conversion list"><h4><span class="star" title="Signature agent">★</span>Graduation-to-Coaching Trigger</h4><p>Flags learners ready to convert from the Sprint into paid coaching</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Conversion list</span></div></article><article class="agent" data-sig="1" data-text="sprint day-content generator generates or refreshes a 21-day sprint day: 10-15 minutes, one artifact, on-theme day content"><h4><span class="star" title="Signature agent">★</span>Sprint Day-Content Generator</h4><p>Generates or refreshes a 21-Day Sprint day: 10-15 minutes, one artifact, on-theme</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Day content</span></div></article><article class="agent" data-sig="0" data-text="assessment generator builds quizzes and assessments per module assessment"><h4>Assessment Generator</h4><p>Builds quizzes and assessments per module</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Assessment</span></div></article><article class="agent" data-sig="0" data-text="cohort progress tracker tracks completion and flags at-risk learners at-risk learners"><h4>Cohort Progress Tracker</h4><p>Tracks completion and flags at-risk learners</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">At-risk learners</span></div></article><article class="agent" data-sig="0" data-text="curriculum benchmarker benchmarks a curriculum against named peers benchmark"><h4>Curriculum Benchmarker</h4><p>Benchmarks a curriculum against named peers</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Benchmark</span></div></article><article class="agent" data-sig="0" data-text="learner-feedback synthesizer synthesizes feedback into specific curriculum edits edit recommendations"><h4>Learner-Feedback Synthesizer</h4><p>Synthesizes feedback into specific curriculum edits</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Edit recommendations</span></div></article><article class="agent" data-sig="0" data-text="sprint daily coach sends the daily learner nudge and check-in during a live cohort learner nudge"><h4>Sprint Daily Coach</h4><p>Sends the daily learner nudge and check-in during a live cohort</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">Learner nudge</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>Incubation &amp; Accelerator Programs</h3><span class="cat-count">6</span></div><p class="cat-tag">Run a cohort like an operating system.</p><div class="grid"><article class="agent" data-sig="1" data-text="cohort office-hours synthesizer turns a group office-hours session into per-startup action items per-startup actions"><h4><span class="star" title="Signature agent">★</span>Cohort Office-Hours Synthesizer</h4><p>Turns a group office-hours session into per-startup action items</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Per-startup actions</span></div></article><article class="agent" data-sig="1" data-text="eir-in-a-box packager assembles a repeatable expert-in-residence program an accelerator buys for a whole cohort program package"><h4><span class="star" title="Signature agent">★</span>EiR-in-a-Box Packager</h4><p>Assembles a repeatable expert-in-residence program an accelerator buys for a whole cohort</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Program package</span></div></article><article class="agent" data-sig="0" data-text="application reviewer screens accelerator applications against criteria ranked applicants"><h4>Application Reviewer</h4><p>Screens accelerator applications against criteria</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Ranked applicants</span></div></article><article class="agent" data-sig="0" data-text="demo-day prep coach preps cohort companies for demo day prep notes"><h4>Demo-Day Prep Coach</h4><p>Preps cohort companies for demo day</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Prep notes</span></div></article><article class="agent" data-sig="0" data-text="founder-match connector flags relevant intros within a cohort or network intro suggestions"><h4>Founder-Match Connector</h4><p>Flags relevant intros within a cohort or network</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Intro suggestions</span></div></article><article class="agent" data-sig="0" data-text="startup ai-readiness scorer scores a portfolio startup’s ai readiness and drafts a plan readiness score + plan"><h4>Startup AI-Readiness Scorer</h4><p>Scores a portfolio startup’s AI readiness and drafts a plan</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Readiness score + plan</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>VC &amp; Fund Portfolio Enablement</h3><span class="cat-count">5</span></div><p class="cat-tag">Give every portfolio company an AI edge.</p><div class="grid"><article class="agent" data-sig="1" data-text="portfolio ai-readiness scorer scores ai readiness across an entire fund portfolio portfolio heatmap"><h4><span class="star" title="Signature agent">★</span>Portfolio AI-Readiness Scorer</h4><p>Scores AI readiness across an entire fund portfolio</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Portfolio heatmap</span></div></article><article class="agent" data-sig="1" data-text="portfolio enablement planner builds a sprint-plus-audit rollout plan across portfolio companies rollout plan"><h4><span class="star" title="Signature agent">★</span>Portfolio Enablement Planner</h4><p>Builds a Sprint-plus-audit rollout plan across portfolio companies</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Rollout plan</span></div></article><article class="agent" data-sig="0" data-text="deal-flow triage triages inbound deal flow against a stated thesis ranked deals"><h4>Deal-Flow Triage</h4><p>Triages inbound deal flow against a stated thesis</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Ranked deals</span></div></article><article class="agent" data-sig="0" data-text="lp-update drafter drafts portfolio and lp update content update draft"><h4>LP-Update Drafter</h4><p>Drafts portfolio and LP update content</p><div class="agent-foot"><span class="cad">Monthly</span><span class="surf">Update draft</span></div></article><article class="agent" data-sig="0" data-text="portfolio-company pulse monitors portfolio companies for signals pulse digest"><h4>Portfolio-Company Pulse</h4><p>Monitors portfolio companies for signals</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Pulse digest</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>Economic Development &amp; Public Programs</h3><span class="cat-count">6</span></div><p class="cat-tag">Scale a region&#x27;s capacity, not just a company&#x27;s.</p><div class="grid"><article class="agent" data-sig="1" data-text="funding-on-ramp matcher matches a client or program to government funding and checks eligibility funding matches + eligibility"><h4><span class="star" title="Signature agent">★</span>Funding-On-Ramp Matcher</h4><p>Matches a client or program to government funding and checks eligibility</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Funding matches + eligibility</span></div></article><article class="agent" data-sig="1" data-text="grant application drafter drafts canadian federal grant applications assembled from the sme&#x27;s intake profile. the gate beats the draft — only qualifying programs get a draft; every missing field is a named [[needs]] gap, never a fabricated value. nothing is submitted without human approval. application draft + gap list"><h4><span class="star" title="Signature agent">★</span>Grant Application Drafter</h4><p>Drafts Canadian federal grant applications assembled from the SME&#x27;s intake profile. The gate beats the draft — only qualifying programs get a draft; every missing field is a named [[NEEDS]] gap, never a fabricated value. Nothing is submitted without human approval.</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Application draft + gap list</span></div></article><article class="agent" data-sig="1" data-text="regional program builder designs a fundable regional ai-upskilling program with the funding on-ramp built in program design"><h4><span class="star" title="Signature agent">★</span>Regional Program Builder</h4><p>Designs a fundable regional AI-upskilling program with the funding on-ramp built in</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Program design</span></div></article><article class="agent" data-sig="0" data-text="impact-metrics reporter compiles program impact metrics for funders impact report"><h4>Impact-Metrics Reporter</h4><p>Compiles program impact metrics for funders</p><div class="agent-foot"><span class="cad">Monthly</span><span class="surf">Impact report</span></div></article><article class="agent" data-sig="0" data-text="public-data synthesizer synthesizes regional public and economic data regional brief"><h4>Public-Data Synthesizer</h4><p>Synthesizes regional public and economic data</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Regional brief</span></div></article><article class="agent" data-sig="0" data-text="stakeholder map builder maps regional stakeholders and partners stakeholder map"><h4>Stakeholder Map Builder</h4><p>Maps regional stakeholders and partners</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Stakeholder map</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>HR / People / L&amp;D</h3><span class="cat-count">5</span></div><p class="cat-tag">Hire, onboard, and grow the team.</p><div class="grid"><article class="agent" data-sig="0" data-text="ai-fluency program builder builds an l&amp;d ai-fluency program for a team program"><h4>AI-Fluency Program Builder</h4><p>Builds an L&amp;D AI-fluency program for a team</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Program</span></div></article><article class="agent" data-sig="0" data-text="onboarding-content generator generates employee onboarding content onboarding content"><h4>Onboarding-Content Generator</h4><p>Generates employee onboarding content</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Onboarding content</span></div></article><article class="agent" data-sig="0" data-text="seat-expansion watcher flags accounts ready to expand seats expansion list"><h4>Seat-Expansion Watcher</h4><p>Flags accounts ready to expand seats</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Expansion list</span></div></article><article class="agent" data-sig="0" data-text="skills-gap mapper maps a team’s ai skills gaps gap map"><h4>Skills-Gap Mapper</h4><p>Maps a team’s AI skills gaps</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Gap map</span></div></article><article class="agent" data-sig="0" data-text="use-guideline drafter drafts responsible-ai use guidelines guideline draft"><h4>Use-Guideline Drafter</h4><p>Drafts responsible-AI use guidelines</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Guideline draft</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>Web, SEO &amp; Funnel</h3><span class="cat-count">8</span></div><p class="cat-tag">Get found, then convert.</p><div class="grid"><article class="agent" data-sig="0" data-text="backlink watcher reports new and lost backlinks backlink changes"><h4>Backlink Watcher</h4><p>Reports new and lost backlinks</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">Backlink changes</span></div></article><article class="agent" data-sig="0" data-text="broken-link crawler crawls the site for broken links broken-link list"><h4>Broken-Link Crawler</h4><p>Crawls the site for broken links</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Broken-link list</span></div></article><article class="agent" data-sig="0" data-text="cta optimizer suggests stronger calls-to-action page by page cta recommendations"><h4>CTA Optimizer</h4><p>Suggests stronger calls-to-action page by page</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">CTA recommendations</span></div></article><article class="agent" data-sig="0" data-text="funnel drop-off analyzer flags where the conversion funnel leaks drop-off points"><h4>Funnel Drop-off Analyzer</h4><p>Flags where the conversion funnel leaks</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Drop-off points</span></div></article><article class="agent" data-sig="0" data-text="keyword tracker tracks target-keyword rankings ranking changes"><h4>Keyword Tracker</h4><p>Tracks target-keyword rankings</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Ranking changes</span></div></article><article class="agent" data-sig="0" data-text="seo audit one-pass technical and content audit audit report"><h4>SEO Audit</h4><p>One-pass technical and content audit</p><div class="agent-foot"><span class="cad">Monthly</span><span class="surf">Audit report</span></div></article><article class="agent" data-sig="0" data-text="schema &amp; meta checker checks structured data and meta tags issues"><h4>Schema &amp; Meta Checker</h4><p>Checks structured data and meta tags</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Issues</span></div></article><article class="agent" data-sig="0" data-text="site-speed monitor watches page speed for regressions regression alerts"><h4>Site-Speed Monitor</h4><p>Watches page speed for regressions</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Regression alerts</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>Finance, Ops &amp; Admin</h3><span class="cat-count">10</span></div><p class="cat-tag">The back office that runs itself.</p><div class="grid"><article class="agent" data-sig="1" data-text="commission calculator computes contractor commissions on collected fees, the engine behind the hire-to-deliver model commission statement"><h4><span class="star" title="Signature agent">★</span>Commission Calculator</h4><p>Computes contractor commissions on collected fees, the engine behind the hire-to-deliver model</p><div class="agent-foot"><span class="cad">Monthly</span><span class="surf">Commission statement</span></div></article><article class="agent" data-sig="0" data-text="calendar concierge schedules, reschedules, and preps meetings calendar actions"><h4>Calendar Concierge</h4><p>Schedules, reschedules, and preps meetings</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Calendar actions</span></div></article><article class="agent" data-sig="0" data-text="cash-flow snapshot a rolling view of money in and out cash-flow snapshot"><h4>Cash-Flow Snapshot</h4><p>A rolling view of money in and out</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Cash-flow snapshot</span></div></article><article class="agent" data-sig="0" data-text="doc organizer files and tags new documents automatically filed docs"><h4>Doc Organizer</h4><p>Files and tags new documents automatically</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Filed docs</span></div></article><article class="agent" data-sig="0" data-text="expense categorizer categorizes expenses as they land categorized expenses"><h4>Expense Categorizer</h4><p>Categorizes expenses as they land</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">Categorized expenses</span></div></article><article class="agent" data-sig="0" data-text="inbox triage sorts and flags the inbox, surfaces what matters prioritized inbox"><h4>Inbox Triage</h4><p>Sorts and flags the inbox, surfaces what matters</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Prioritized inbox</span></div></article><article class="agent" data-sig="0" data-text="invoice chaser tracks unpaid invoices and drafts reminders chase drafts"><h4>Invoice Chaser</h4><p>Tracks unpaid invoices and drafts reminders</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Chase drafts</span></div></article><article class="agent" data-sig="0" data-text="renewal reminder flags upcoming renewals in good time renewal list"><h4>Renewal Reminder</h4><p>Flags upcoming renewals in good time</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Renewal list</span></div></article><article class="agent" data-sig="0" data-text="task router routes incoming asks to the right agent routed tasks"><h4>Task Router</h4><p>Routes incoming asks to the right agent</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Routed tasks</span></div></article><article class="agent" data-sig="0" data-text="weekly review compiler assembles the friday review weekly review"><h4>Weekly Review Compiler</h4><p>Assembles the Friday review</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Weekly review</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>Meetings, Notes &amp; Knowledge</h3><span class="cat-count">6</span></div><p class="cat-tag">Nothing said in a meeting gets lost.</p><div class="grid"><article class="agent" data-sig="0" data-text="action-item extractor extracts commitments from every meeting action items"><h4>Action-Item Extractor</h4><p>Extracts commitments from every meeting</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Action items</span></div></article><article class="agent" data-sig="0" data-text="commitment tracker tracks whether commitments were actually kept open commitments"><h4>Commitment Tracker</h4><p>Tracks whether commitments were actually kept</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Open commitments</span></div></article><article class="agent" data-sig="0" data-text="debrief writer turns a call into a debrief and next steps debrief"><h4>Debrief Writer</h4><p>Turns a call into a debrief and next steps</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Debrief</span></div></article><article class="agent" data-sig="0" data-text="decision logger logs key decisions with their context decision log"><h4>Decision Logger</h4><p>Logs key decisions with their context</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Decision log</span></div></article><article class="agent" data-sig="0" data-text="granola ingestor pulls and structures meeting transcripts structured notes"><h4>Granola Ingestor</h4><p>Pulls and structures meeting transcripts</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Structured notes</span></div></article><article class="agent" data-sig="0" data-text="transcript summarizer summarizes long transcripts on demand summary"><h4>Transcript Summarizer</h4><p>Summarizes long transcripts on demand</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Summary</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>Local SMB Automation (Runner)</h3><span class="cat-count">6</span></div><p class="cat-tag">Main-street businesses, automated.</p><div class="grid"><article class="agent" data-sig="1" data-text="contractor-handoff packager packages a scoped job so a hired contractor can execute it without you, the core of the do-then-hire model handoff pack"><h4><span class="star" title="Signature agent">★</span>Contractor-Handoff Packager</h4><p>Packages a scoped job so a hired contractor can execute it without you, the core of the do-then-hire model</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Handoff pack</span></div></article><article class="agent" data-sig="1" data-text="smb process scoper scopes a local business’s repetitive process into a runner automation automation scope"><h4><span class="star" title="Signature agent">★</span>SMB Process Scoper</h4><p>Scopes a local business’s repetitive process into a Runner automation</p><div class="agent-foot"><span class="cad">On-demand</span><span class="surf">Automation scope</span></div></article><article class="agent" data-sig="0" data-text="listing &amp; bid builder builds listings and bids, the used-car template generalized ready listings"><h4>Listing &amp; Bid Builder</h4><p>Builds listings and bids, the used-car template generalized</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Ready listings</span></div></article><article class="agent" data-sig="0" data-text="local-lead capturer captures and qualifies local inbound qualified local leads"><h4>Local-Lead Capturer</h4><p>Captures and qualifies local inbound</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Qualified local leads</span></div></article><article class="agent" data-sig="0" data-text="quote generator generates quotes from an inbound request quote"><h4>Quote Generator</h4><p>Generates quotes from an inbound request</p><div class="agent-foot"><span class="cad">On-event</span><span class="surf">Quote</span></div></article><article class="agent" data-sig="0" data-text="recurring-service scheduler schedules recurring local-service runs run schedule"><h4>Recurring-Service Scheduler</h4><p>Schedules recurring local-service runs</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Run schedule</span></div></article></div></div><div class="cat"><div class="cat-head"><h3>Source-of-Truth Maintenance</h3><span class="cat-count">7</span></div><p class="cat-tag">The memory layer that compounds — the real moat.</p><div class="grid"><article class="agent" data-sig="1" data-text="conflict detector flags when two sources disagree on a fact or figure conflicts"><h4><span class="star" title="Signature agent">★</span>Conflict Detector</h4><p>Flags when two sources disagree on a fact or figure</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Conflicts</span></div></article><article class="agent" data-sig="1" data-text="freshness auditor flags stale records for re-verification before agents trust them stale list"><h4><span class="star" title="Signature agent">★</span>Freshness Auditor</h4><p>Flags stale records for re-verification before agents trust them</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">Stale list</span></div></article><article class="agent" data-sig="1" data-text="pattern miner surfaces inferred patterns from history into the derived-memory layer inferred patterns"><h4><span class="star" title="Signature agent">★</span>Pattern Miner</h4><p>Surfaces inferred patterns from history into the derived-memory layer</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Inferred patterns</span></div></article><article class="agent" data-sig="1" data-text="provenance tagger tags every new memory item with its source and timestamp tagged items"><h4><span class="star" title="Signature agent">★</span>Provenance Tagger</h4><p>Tags every new memory item with its source and timestamp</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Tagged items</span></div></article><article class="agent" data-sig="0" data-text="dedup &amp; merge finds and merges duplicate records merge suggestions"><h4>Dedup &amp; Merge</h4><p>Finds and merges duplicate records</p><div class="agent-foot"><span class="cad">Daily</span><span class="surf">Merge suggestions</span></div></article><article class="agent" data-sig="0" data-text="knowledge-gap finder flags missing context the agents need but do not have gap list"><h4>Knowledge-Gap Finder</h4><p>Flags missing context the agents need but do not have</p><div class="agent-foot"><span class="cad">Weekly</span><span class="surf">Gap list</span></div></article><article class="agent" data-sig="0" data-text="memory scoper enforces which agents and projects may see which memory scope audits"><h4>Memory Scoper</h4><p>Enforces which agents and projects may see which memory</p><div class="agent-foot"><span class="cad">Continuous</span><span class="surf">Scope audits</span></div></article></div></div>
   <div class="noresult" id="noresult">No agents match that search. Try a broader term.</div>
+</div></section>
+
+<!-- ===== TRUST ===== -->
+<section id="trust"><div class="wrap">
+  <div class="section-bar">
+    <h2>The trust layer is the foundation</h2>
+    <span class="sub">the NorthClaw fundamentals</span>
+  </div>
+  <p class="lead">A console that holds your whole business and connects your tools has to earn that. Security and transparency are built in from the first line, not bolted on as a setting.</p>
+  <div class="cards">
+    <div class="card">
+      <div class="ci"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6l7-3z"/></svg></div>
+      <h3>PIPEDA by design</h3>
+      <p>Canadian privacy compliance is the default, not a checkbox. Built for organizations that answer to their members and regulators.</p>
+    </div>
+    <div class="card">
+      <div class="ci"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/></svg></div>
+      <h3>Full transparency</h3>
+      <p>Every agent action is logged, attributed, and explainable. You can always see what ran, on what data, and why.</p>
+    </div>
+    <div class="card">
+      <div class="ci"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+      <h3>Your keys, your data</h3>
+      <p>Bring your own model and keys. Secrets stay in a vault, scoped to you, never shared, never marked up.</p>
+    </div>
+    <div class="card">
+      <div class="ci"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg></div>
+      <h3>Isolated by tenant</h3>
+      <p>Zero-trust agent identity and per-tenant isolation. Your console and its memory are sealed off from everyone else's.</p>
+    </div>
+  </div>
+  <p class="northnote">The trust layer is the foundation of NorthClaw, the venture ainterface ships under.</p>
+</div></section>
+
+<!-- ===== COMPARE ===== -->
+<section><div class="wrap">
+  <div class="section-bar">
+    <h2>Not another chat box. Not another flow builder.</h2>
+    <span class="sub">the operating console in between</span>
+  </div>
+  <div class="crow">
+    <div class="col">
+      <h3>Everything else</h3>
+      <ul>
+        <li>Chat-first: a cursor and a blank box</li>
+        <li>One tool per part of the business, none of them talking</li>
+        <li>You build automations, then leave them running elsewhere</li>
+        <li>Locked to one ecosystem or one model</li>
+        <li>Token markup baked into the price</li>
+      </ul>
+    </div>
+    <div class="col ours">
+      <h3>ainterface</h3>
+      <ul>
+        <li>Action-first: your real work is the home screen</li>
+        <li>Every part of the business on one screen, one memory</li>
+        <li>Point an agent at any panel and it goes to work</li>
+        <li>Bring your own model and your own keys</li>
+        <li>Zero markup, PIPEDA-compliant, fully logged</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- ===== WAITLIST ===== -->
+<section id="waitlist"><div class="wrap">
+  <div class="waitlist">
+    <span class="kicker">Early access</span>
+    <h2 style="text-align:center;max-width:24ch;margin:14px auto 10px;font-size:30px">Build the first version with us.</h2>
+    <p class="lead" style="text-align:center;margin:0 auto;max-width:56ch">We're onboarding a small first cohort of operators and teams. Tell us where to reach you and which panels you'd plug in first.</p>
+    <form id="waitlistForm" onsubmit="return joinWaitlist(event)">
+      <input type="email" id="email" name="email" placeholder="you@work.com" autocomplete="email" required>
+      <!-- honeypot: hidden from people, bots fill it, we drop those -->
+      <input type="text" id="hp_company" name="hp_company" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
+      <button class="btn-primary" type="submit" id="waitlistSubmit">Request access</button>
+    </form>
+    <div class="thanks" id="thanks">You're on the list. We'll be in touch soon.</div>
+    <div class="error" id="formError"></div>
+    <p class="note">No spam. Just an invite when your seat is ready.</p>
+  </div>
+</div></section>
+
+<div class="wrap">
+  <footer>
+    <span>© 2026 ainterface · a NorthClaw venture · a project of AI for Canadians</span>
+    <span>Build the interface to your work.</span>
+  </footer>
 </div>
 
-<footer><div class="wrap">
-  <div>
-    <div class="fnote">A project of <a class="flink" href="https://aiforcanadians.org">AI for Canadians</a> · Toronto, Canada</div>
-    <div class="disc">In active development. The interface prototype is live — every agent shown here is a spec in the build. Human-in-the-loop is the default: anything consequential drafts and waits for approval.</div>
-  </div>
-  <a class="btn" href="/app">Open the interface →</a>
-</div></footer>
+<script>
+  const I = {
+    strategy:'<path d="M3 3v18h18"/><path d="M7 14l4-4 3 3 5-6"/>',
+    research:'<circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/>',
+    marketing:'<path d="M3 11l16-6v14L3 13z"/><path d="M3 11v4"/>',
+    sales:'<path d="M4 19V5"/><path d="M4 19h16"/><rect x="7" y="11" width="3" height="6"/><rect x="12" y="7" width="3" height="10"/><rect x="17" y="13" width="3" height="4"/>',
+    competitors:'<circle cx="8" cy="9" r="3"/><circle cx="16" cy="9" r="3"/><path d="M3 19a5 5 0 0 1 10 0"/><path d="M13 19a5 5 0 0 1 8-4"/>',
+    security:'<path d="M12 3l8 4v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V7l8-4z"/>',
+    operations:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/>',
+    solutions:'<path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 1 4 10c-1 1-1 2-1 3H9c0-1 0-2-1-3a6 6 0 0 1 4-10z"/>',
+    roadmaps:'<path d="M5 3v14"/><circle cx="5" cy="19" r="2"/><path d="M5 7h8a3 3 0 0 1 0 6H9"/>',
+    crm:'<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 9h6M7 13h10M7 17h4"/>',
+    memory:'<circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M6.5 7l4 4M17.5 7l-4 4M6.5 17l4-4M17.5 17l-4-4"/>',
+    automations:'<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>',
+    business:'<rect x="3" y="9" width="7" height="12"/><rect x="14" y="3" width="7" height="18"/>'
+  };
+  const ic = k => '<svg viewBox="0 0 24 24">'+I[k]+'</svg>';
+
+  // color tokens echo the AIFC HQ director-card scheme
+  const C = {accent:'#4a5d3a',sales:'#2f6690',delivery:'#6a4c93',marketing:'#c97b3a',build:'#3d6b58',finops:'#8b3a3a'};
+
+  // each panel: a SUMMARY (tagged state lines), the ACTIONS you can take, and the AGENT on duty
+  const MODS = [
+    {k:'strategy',c:'accent',name:'Strategy',tag:'Positioning & bets',foot:'/deploy strategy: draft the quarterly plan',
+      summary:[['move','On track','Action-first console category still uncontested'],['info','Phase 1','Shipping to 5 design partners'],['warn','Watch','An incumbent could pivot to a console']],
+      actions:[['Draft the quarterly plan','/deploy strategy'],['Update the bet board','panel: strategy'],['Brief the board','/snapshot']],
+      agent:{name:'Strategy scout',state:'on',task:'Watching competitor moves for category threats'}},
+    {k:'research',c:'sales',name:'Research',tag:'Sources & synthesis',foot:'/deploy research: synthesize open briefs',
+      summary:[['move','Current','2 briefs synthesized and ready'],['info','Tracking','24 sources across 4 themes'],['decision','Confirmed','Generative UI + MCP is the stack']],
+      actions:[['Synthesize open briefs','/deploy research'],['Add a source','panel: research']],
+      agent:{name:'Research scribe',state:'on',task:'Summarizing 3 new sources into the live brief'}},
+    {k:'marketing',c:'marketing',name:'Marketing',tag:'Campaigns & content',foot:'/deploy marketing: schedule the week',
+      summary:[['info','Live','Waitlist launch campaign running'],['move','Performing','6 posts drafted, LinkedIn 3.2% CTR'],['warn','Awaiting','Next post needs your approval']],
+      actions:[['Schedule the week','/deploy marketing'],['Draft a post','panel: marketing']],
+      agent:{name:'LinkedIn caretaker',state:'on',task:'Drafting today’s comment queue on the target list'}},
+    {k:'sales',c:'sales',name:'Sales',tag:'Pipeline & outreach',foot:'/deploy sales: draft follow-ups, queue outreach',
+      summary:[['info','Pipeline','18 orgs, 7 warm leads today'],['move','Closest','Northwind Bio, stage 2'],['warn','Nudge','Lakeview proposal 6 days quiet']],
+      actions:[['Draft follow-ups','/deploy sales'],['Queue outreach','panel: sales'],['Score warm leads','/monday']],
+      agent:{name:'Pipeline scout',state:'on',task:'Drafted 4 follow-ups, queued to your inbox'}},
+    {k:'competitors',c:'finops',name:'Competitors',tag:'Moves & whitespace',foot:'/deploy competitors: track moves, flag whitespace',
+      summary:[['move','Open','Whitespace: action-first operating console'],['info','Watching','three incumbent tools'],['warn','New move','an incumbent shipped agent teams this week']],
+      actions:[['Track moves','/deploy competitors'],['Map the whitespace','panel: competitors']],
+      agent:{name:'Competitive sentinel',state:'on',task:'Logging an incumbent’s agent-teams launch to memory'}},
+    {k:'security',c:'delivery',name:'Security',tag:'Compliance & access',foot:'/deploy security: run the weekly audit',
+      summary:[['move','Compliant','PIPEDA by design, data residency Canada'],['move','Logged','1,204 agent actions this week'],['info','Clean','No open issues']],
+      actions:[['Run the weekly audit','/deploy security'],['Export the action log','panel: security']],
+      agent:{name:'Risk sentinel',state:'on',task:'Auditing access scopes, none over-permissioned'}},
+    {k:'operations',c:'build',name:'Operations',tag:'Workflows & runbooks',foot:'/deploy ops: run the workflow on schedule',
+      summary:[['info','Running','12 active workflows'],['move','Clean','Client onboarding v3 healthy'],['info','Next','Weekly value report at 6:00am']],
+      actions:[['Run the workflow','/deploy ops'],['Edit a runbook','panel: operations']],
+      agent:{name:'Ops runner',state:'on',task:'Scheduled to build the value report at 6:00am'}},
+    {k:'solutions',c:'accent',name:'Solutions',tag:'Offerings & packages',foot:'/deploy solutions: update the offer sheet',
+      summary:[['move','Catalog','5 packages, all current'],['info','Featured','AI workflow design sprint'],['info','Avg','5-month engagement']],
+      actions:[['Update the offer sheet','/deploy solutions'],['Add a package','panel: solutions']],
+      agent:{name:'Offer keeper',state:'off',task:'Idle, last refresh 3 days ago'}},
+    {k:'roadmaps',c:'sales',name:'Roadmaps',tag:'Phases & milestones',foot:'/deploy roadmap: re-sequence by capacity',
+      summary:[['info','Now','Phase 1: personal console, building'],['move','On track','Design-partner cohort on schedule'],['info','Queued','Phase 2: the composer']],
+      actions:[['Re-sequence by capacity','/deploy roadmap'],['Add a milestone','panel: roadmaps']],
+      agent:{name:'Roadmap steward',state:'on',task:'Re-checking phase order against capacity'}},
+    {k:'crm',c:'sales',name:'CRM',tag:'Contacts & relationships',foot:'/deploy crm: surface today’s warm leads',
+      summary:[['info','Contacts','512 tracked, 7 warm surfaced today'],['move','Recent','Last touch: Dana R., 2 days ago'],['warn','Decay','9 relationships going cold']],
+      actions:[['Surface warm leads','/deploy crm'],['Log a touch','panel: crm'],['Find intro paths','/intros']],
+      agent:{name:'CRM caretaker',state:'on',task:'Flagging 9 decaying relationships for a nudge'}},
+    {k:'memory',c:'delivery',name:'Memory',tag:'What your console knows',foot:'/deploy memory: compact & dedupe tonight',
+      summary:[['move','Coverage','1,800 entities, 96 decisions logged'],['move','Healthy','Nightly compaction clean'],['warn','Review','3 stale entries flagged']],
+      actions:[['Compact & dedupe','/deploy memory'],['Review stale entries','panel: memory']],
+      agent:{name:'Memory librarian',state:'on',task:'Queued nightly compaction for 2:00am'}},
+    {k:'automations',c:'build',name:'Automations',tag:'Scheduled agents & triggers',foot:'/deploy automations: tune the routine',
+      summary:[['move','Healthy','6 agents on duty, all green'],['info','Next','Morning briefing at 6:00am'],['decision','Trigger','Hot prospect, then draft a DM']],
+      actions:[['Tune the routine','/deploy automations'],['Add a trigger','panel: automations']],
+      agent:{name:'Automation conductor',state:'on',task:'Holding 6 scheduled agents, none overdue'}},
+    {k:'business',c:'accent',name:'Business breakdown',tag:'The whole picture',foot:'/deploy snapshot: build the board update',
+      summary:[['move','Green','13 panels live, healthy across the board'],['info','Memory','96% coverage'],['info','One screen','Strategy, sales, and ops together']],
+      actions:[['Build the board snapshot','/deploy snapshot'],['Open full breakdown','panel: business']],
+      agent:{name:'Bo, the orchestrator',state:'on',task:'Routing across all panels, surfacing the top 5'}}
+  ];
+
+  const grid = document.getElementById('modgrid');
+  grid.innerHTML = MODS.map((m,i)=>(
+    '<button class="mod'+(i===0?' active':'')+'" data-i="'+i+'" style="--mc:'+C[m.c]+'">'+
+      '<span class="ic">'+ic(m.k)+'</span>'+
+      '<div class="mname">'+m.name+'</div>'+
+      '<div class="mtag">'+m.tag+'</div>'+
+    '</button>'
+  )).join('');
+
+  const preview = document.getElementById('preview');
+  function select(i){
+    const m = MODS[i];
+    document.querySelectorAll('.mod').forEach((el,idx)=>el.classList.toggle('active',idx===i));
+    preview.style.setProperty('--mc', C[m.c]);
+    document.getElementById('pvIc').innerHTML = ic(m.k);
+    document.getElementById('pvTitle').textContent = m.name;
+    document.getElementById('pvTag').textContent = m.tag;
+    document.getElementById('pvFoot').textContent = m.foot;
+    const sum = m.summary.map(s=>(
+      '<div class="exline"><span class="tag '+s[0]+'">'+s[1]+'</span><div class="body">'+s[2]+'</div></div>'
+    )).join('');
+    const acts = m.actions.map(a=>(
+      '<button class="act"><span class="al">'+a[0]+'</span><span class="ap">'+a[1]+'</span></button>'
+    )).join('');
+    const st = m.agent.state==='on' ? 'on duty' : 'idle';
+    const agent =
+      '<div class="agentrow"><span class="ava"></span><div>'+
+        '<div class="an">'+m.agent.name+'<span class="run-state '+m.agent.state+'">'+st+'</span></div>'+
+        '<div class="at">'+m.agent.task+'</div>'+
+      '</div></div>';
+    document.getElementById('pvBody').innerHTML =
+      '<div class="pv-sec"><h5>Summary</h5>'+sum+'</div>'+
+      '<div class="pv-sec"><h5>Actions</h5><div class="acts">'+acts+'</div></div>'+
+      '<div class="pv-sec"><h5>Agent on duty</h5>'+agent+'</div>';
+  }
+  grid.addEventListener('click',e=>{
+    const b = e.target.closest('.mod'); if(!b) return;
+    select(+b.dataset.i);
+  });
+  select(0);
+
+  // ── Waitlist capture ─────────────────────────
+  // PLACEHOLDER. Swap this one string for your real endpoint, see DEPLOY.md.
+  //   Formspree:    https://formspree.io/f/XXXXXXXX
+  //   Resend route: /api/waitlist
+  // Left as-is, the form runs in demo mode: it shows the thank-you but stores nothing.
+  const WAITLIST_ENDPOINT = "REPLACE_WITH_YOUR_ENDPOINT";
+
+  function showThanks(){
+    document.querySelector('#waitlist form').style.display='none';
+    document.getElementById('thanks').style.display='block';
+  }
+
+  async function joinWaitlist(e){
+    e.preventDefault();
+    const btn = document.getElementById('waitlistSubmit');
+    const err = document.getElementById('formError');
+    const email = document.getElementById('email').value.trim();
+    const trap = document.getElementById('hp_company').value;
+    err.style.display='none';
+    if(!email) return false;
+    if(trap) return false; // honeypot tripped, drop silently
+
+    // Demo mode: no endpoint wired yet.
+    if(WAITLIST_ENDPOINT === "REPLACE_WITH_YOUR_ENDPOINT"){ showThanks(); return false; }
+
+    const label = btn.textContent;
+    btn.disabled = true; btn.textContent = "Adding you…";
+    try{
+      const res = await fetch(WAITLIST_ENDPOINT, {
+        method:"POST",
+        headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body:JSON.stringify({email, source:"ainterface.org waitlist", ts:new Date().toISOString()})
+      });
+      if(!res.ok) throw new Error("status "+res.status);
+      showThanks();
+    }catch(_){
+      btn.disabled=false; btn.textContent=label;
+      err.textContent="That didn't go through. Give it a moment and try again.";
+      err.style.display='block';
+    }
+    return false;
+  }
+</script>
 
 <script>
 (function(){
-  var q=document.getElementById('q'), sig=document.getElementById('sigToggle'),
-      live=document.getElementById('live'), nores=document.getElementById('noresult'),
-      cards=[].slice.call(document.querySelectorAll('.agent')),
-      cats=[].slice.call(document.querySelectorAll('.cat')),
-      sigOn=false, total=101;
-  function apply(){
-    var term=(q.value||'').trim().toLowerCase(), shown=0;
-    cards.forEach(function(c){
-      var ok=(!sigOn||c.dataset.sig==='1') && (!term||c.dataset.text.indexOf(term)>-1);
-      c.style.display=ok?'':'none'; if(ok)shown++;
-    });
-    cats.forEach(function(s){
-      var any=s.querySelector('.agent:not([style*="display: none"])');
-      s.style.display=any?'':'none';
-    });
-    live.textContent=shown+(shown===1?' shown':' shown');
-    nores.style.display=shown?'none':'block';
-  }
-  q.addEventListener('input',apply);
-  sig.addEventListener('click',function(){sigOn=!sigOn;sig.classList.toggle('on',sigOn);apply();});
+  var q=document.getElementById('q'),sig=document.getElementById('sigToggle'),live=document.getElementById('live'),nores=document.getElementById('noresult'),
+      cards=[].slice.call(document.querySelectorAll('#catalog .agent')),cats=[].slice.call(document.querySelectorAll('#catalog .cat')),sigOn=false;
+  function apply(){var t=(q.value||'').trim().toLowerCase(),n=0;
+    cards.forEach(function(c){var ok=(!sigOn||c.dataset.sig==='1')&&(!t||c.dataset.text.indexOf(t)>-1);c.style.display=ok?'':'none';if(ok)n++;});
+    cats.forEach(function(s){s.style.display=s.querySelector('.agent:not([style*="display: none"])')?'':'none';});
+    live.textContent=n+' shown';nores.style.display=n?'none':'block';}
+  q.addEventListener('input',apply);sig.addEventListener('click',function(){sigOn=!sigOn;sig.classList.toggle('on',sigOn);apply();});
 })();
 </script>
 </body>
