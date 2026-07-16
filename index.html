@@ -259,6 +259,18 @@ input[type=email]:focus{background:#232932}
 #catalog .count-live{color:var(--ink-faint);font-family:var(--mono);font-size:.8rem;margin-left:auto}
 #catalog .noresult{display:none;text-align:center;color:var(--ink-faint);padding:40px 0}
 </style>
+<style id="dougskin">
+.hardgate{background:linear-gradient(180deg,rgba(224,160,66,.08),var(--panel));border:1px solid #7a5b26;border-radius:10px;padding:22px 24px;margin:0 0 16px}
+.hardgate .hg-badge{display:inline-block;font-family:"Spline Sans Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);margin-bottom:8px}
+.hardgate p{color:var(--ink-soft);font-size:14.5px;max-width:82ch;margin:0}
+.spawnflow{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+@media(max-width:860px){.spawnflow{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.spawnflow{grid-template-columns:1fr}}
+.sf{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--accent);border-radius:10px;padding:18px}
+.sf .sfn{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:rgba(224,160,66,.14);color:var(--accent);font-family:"Spline Sans Mono",monospace;font-weight:600;font-size:13px;margin-bottom:11px}
+.sf h4{font-family:"Fraunces",serif;font-weight:500;font-size:1.06rem;margin:0 0 6px}
+.sf p{color:var(--ink-soft);font-size:13.5px;margin:0}
+</style>
 </head>
 <body>
 
@@ -380,6 +392,21 @@ input[type=email]:focus{background:#232932}
 </div></section>
 
 
+<!-- ===== SPAWN FLOW ===== -->
+<section id="spawn"><div class="wrap">
+  <div class="section-bar">
+    <h2>You don’t configure it. You’re interviewed.</h2>
+    <span class="sub">from “I need help with X” to a running agent</span>
+  </div>
+  <p class="lead">No settings screens, no flow builder. You say what you want handled; an AI does the setup and hands you back something already running — the way you’d brief a new hire, not wire a workflow.</p>
+  <div class="spawnflow">
+    <div class="sf"><span class="sfn">1</span><h4>Tell it the job</h4><p>“Keep my pipeline warm.” Plain language, the way you’d brief someone on day one.</p></div>
+    <div class="sf"><span class="sfn">2</span><h4>It interviews you</h4><p>A short back-and-forth to pin down scope, cadence, and where the lines are.</p></div>
+    <div class="sf"><span class="sfn">3</span><h4>It recommends &amp; spawns</h4><p>Suggests the settings, then stands the agent up in the background — no config to hand-wire.</p></div>
+    <div class="sf"><span class="sfn">4</span><h4>It wires the connectors</h4><p>Walks you through granting access one gate at a time, then starts on the panel.</p></div>
+  </div>
+</div></section>
+
 <!-- ===== AGENT CATALOG ===== -->
 <section id="catalog"><div class="wrap">
   <div class="section-bar">
@@ -402,7 +429,11 @@ input[type=email]:focus{background:#232932}
     <h2>The trust layer is the foundation</h2>
     <span class="sub">the NorthClaw fundamentals</span>
   </div>
-  <p class="lead">A console that holds your whole business and connects your tools has to earn that. Security and transparency are built in from the first line, not bolted on as a setting.</p>
+  <p class="lead">A console that holds your whole business has to earn it — and the real failure mode isn’t a data leak, it’s <b style="color:var(--ink)">drift</b>: an agent reasons around a soft instruction and does the thing you told it not to. So control here isn’t a suggestion in a prompt. It’s a hard gate.</p>
+  <div class="hardgate">
+    <div class="hg-badge">Hard gates, not soft rules</div>
+    <p>Autonomy is a switch you flip per agent, not a line in a prompt an agent can talk its way around. Human-in-the-loop is the default: anything consequential drafts and waits until you grant that specific agent that specific permission. Off means off.</p>
+  </div>
   <div class="cards">
     <div class="card">
       <div class="ci"><svg viewBox="0 0 24 24"><path d="M12 3l7 3v5c0 4-3 7-7 8-4-1-7-4-7-8V6l7-3z"/></svg></div>
